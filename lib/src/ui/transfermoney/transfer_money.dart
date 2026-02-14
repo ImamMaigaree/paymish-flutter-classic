@@ -249,15 +249,23 @@ class _TransferMoneyScreenState extends State<TransferMoneyScreen>
                                               ImageConstants.icDefaultProfileImage);
                                   return InkWell(
                                     onTap: () {
+                                      final senderId = finalList[index].requestBy ?? finalList[index].id;
+                                      if (senderId == null || senderId == 0) {
+                                        DialogUtils.showAlertDialog(
+                                            context,
+                                            Localization.of(context)
+                                                .errorSomethingWentWrong);
+                                        return;
+                                      }
                                       NavigationUtils.push(
                                           context, routeChatScreen,
                                           arguments: {
                                             NavigationParams.senderUserId:
-                                                finalList[index].requestBy,
+                                                senderId,
                                             NavigationParams.senderProfileImage:
                                                 finalList[index].profilePicture,
                                             NavigationParams.senderName:
-                                                """${finalList[index].firstName} ${finalList[index].lastName}""",
+                                                """${finalList[index].firstName ?? ''} ${finalList[index].lastName ?? ''}""".trim(),
                                           });
                                     },
                                     child: Container(
@@ -329,13 +337,31 @@ class _TransferMoneyScreenState extends State<TransferMoneyScreen>
                                                 labelStyle: buildTextStyle(
                                                     finalList, index),
                                                 onPressed: () {
+                                                  final senderId =
+                                                      finalList[index].requestBy ??
+                                                          finalList[index].id;
+                                                  if (senderId == null ||
+                                                      senderId == 0) {
+                                                    DialogUtils.showAlertDialog(
+                                                        context,
+                                                        Localization.of(context)
+                                                            .errorSomethingWentWrong);
+                                                    return;
+                                                  }
                                                   NavigationUtils.push(
                                                       context, routeChatScreen,
                                                       arguments: {
                                                         NavigationParams
                                                                 .senderUserId:
+                                                            senderId,
+                                                        NavigationParams
+                                                                .senderProfileImage:
                                                             finalList[index]
-                                                                .requestBy
+                                                                .profilePicture,
+                                                        NavigationParams
+                                                                .senderName:
+                                                            """${finalList[index].firstName ?? ''} ${finalList[index].lastName ?? ''}"""
+                                                                .trim(),
                                                       });
                                                 },
                                               ),

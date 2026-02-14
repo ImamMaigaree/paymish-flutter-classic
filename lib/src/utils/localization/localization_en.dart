@@ -1008,6 +1008,9 @@ class LocalizationEN implements Localization {
   String get errorMeterNumber => "Please enter Meter Number";
 
   @override
+  String get errorInvalidMeterNumber => "Please enter a valid 13-digit meter number";
+
+  @override
   String get labelMeterNumber => "Meter Number";
 
   @override

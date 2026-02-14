@@ -714,6 +714,8 @@ abstract class Localization {
 
   String get labelMeterNumber;
 
+  String get errorInvalidMeterNumber;
+
   String get errorMeterNumber;
 
   String get labelDataType;

@@ -38,6 +38,10 @@ class _MyTransactionState extends State<MyTransaction>
 
     _allPagingController = PagingController<int, TransactionDataItem>(
       getNextPageKey: (state) {
+        final pages = state.pages;
+        if (pages != null && pages.isNotEmpty && pages.last.isEmpty) {
+          return null;
+        }
         if (state.keys == null || state.keys!.isEmpty) {
           return _firstPageKey;
         }
@@ -49,6 +53,10 @@ class _MyTransactionState extends State<MyTransaction>
 
     _debitPagingController = PagingController<int, TransactionDataItem>(
       getNextPageKey: (state) {
+        final pages = state.pages;
+        if (pages != null && pages.isNotEmpty && pages.last.isEmpty) {
+          return null;
+        }
         if (state.keys == null || state.keys!.isEmpty) {
           return _firstPageKey;
         }
@@ -60,6 +68,10 @@ class _MyTransactionState extends State<MyTransaction>
 
     _creditPagingController = PagingController<int, TransactionDataItem>(
       getNextPageKey: (state) {
+        final pages = state.pages;
+        if (pages != null && pages.isNotEmpty && pages.last.isEmpty) {
+          return null;
+        }
         if (state.keys == null || state.keys!.isEmpty) {
           return _firstPageKey;
         }
@@ -249,25 +261,31 @@ class _MyTransactionState extends State<MyTransaction>
     required PagingController<int, TransactionDataItem> controller,
     required Widget Function(TransactionDataItem) itemBuilder,
   }) {
-    return PagedListView<int, TransactionDataItem>(
-      state: controller.value,
-      fetchNextPage: controller.fetchNextPage,
-      builderDelegate: PagedChildBuilderDelegate<TransactionDataItem>(
-        itemBuilder: (context, item, index) => itemBuilder(item),
-        firstPageProgressIndicatorBuilder: (_) =>
-            const Center(child: CircularProgressIndicator()),
-        newPageProgressIndicatorBuilder: (_) =>
-            const Center(child: CircularProgressIndicator()),
-        noItemsFoundIndicatorBuilder: (_) => Center(
-          child: Text(Localization.of(context).labelNoTransactionDetailsFound),
-        ),
-        firstPageErrorIndicatorBuilder: (_) => Center(
-          child: Text(Localization.of(context).errorSomethingWentWrong),
-        ),
-        newPageErrorIndicatorBuilder: (_) => Center(
-          child: Text(Localization.of(context).errorSomethingWentWrong),
-        ),
-      ),
+    return PagingListener<int, TransactionDataItem>(
+      controller: controller,
+      builder: (context, state, fetchNextPage) {
+        return PagedListView<int, TransactionDataItem>(
+          state: state,
+          fetchNextPage: fetchNextPage,
+          builderDelegate: PagedChildBuilderDelegate<TransactionDataItem>(
+            itemBuilder: (context, item, index) => itemBuilder(item),
+            firstPageProgressIndicatorBuilder: (_) =>
+                const Center(child: CircularProgressIndicator()),
+            newPageProgressIndicatorBuilder: (_) =>
+                const Center(child: CircularProgressIndicator()),
+            noItemsFoundIndicatorBuilder: (_) => Center(
+              child:
+                  Text(Localization.of(context).labelNoTransactionDetailsFound),
+            ),
+            firstPageErrorIndicatorBuilder: (_) => Center(
+              child: Text(Localization.of(context).errorSomethingWentWrong),
+            ),
+            newPageErrorIndicatorBuilder: (_) => Center(
+              child: Text(Localization.of(context).errorSomethingWentWrong),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -279,10 +297,7 @@ class _MyTransactionState extends State<MyTransaction>
       final value =
           await UserApiManager().getMyTransactionList(page: pageKey, type: type);
       final result = value.data?.result ?? <TransactionDataItem>[];
-      final newItems = result
-          .where((datalist) => datalist.status == DicParams.success)
-          .toList();
-      return newItems;
+      return result;
     } catch (e) {
       if (e is ResBaseModel) {
         if (!checkSessionExpire(e, context)) {

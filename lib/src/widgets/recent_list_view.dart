@@ -54,9 +54,19 @@ class RecentListView extends StatelessWidget {
               (index) {
                 return InkWell(
                   onTap: () {
+                    final userId = recentListContact[index].id;
+                    if (userId == null || userId == 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(Localization.of(context)
+                              .errorSomethingWentWrong)));
+                      return;
+                    }
                     NavigationUtils.push(context, routeChatScreen, arguments: {
-                      NavigationParams.senderUserId:
-                          recentListContact[index].id ?? 0
+                      NavigationParams.senderUserId: userId,
+                      NavigationParams.senderProfileImage:
+                          recentListContact[index].profilePicture,
+                      NavigationParams.senderName:
+                          (recentListContact[index].firstName ?? '').trim(),
                     });
                   },
                   child: Column(
