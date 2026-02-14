@@ -1,0 +1,35 @@
+class NavigationParams {
+  static const String phoneNumber = "phoneNumber";
+  static const String model = "model";
+  static const String password = "password";
+  static const String userId = "userId";
+  static const String type = "type";
+  static const String isFromAuth = "isFromAuth";
+  static const String isFromIntroduction = "isFromIntroduction";
+  static const String isPrivacyPolicy = "isPrivacyPolicy";
+  static const String showBackButton = "showBackButton";
+  static const String addToWalletAmount = "addToWalletAmount";
+  static const String isPayScreen = "isPayScreen";
+  static const String nameOfUser = "nameOfUser";
+  static const String idOfUser = "idOfUser";
+  static const String transferMoneyData = "transferMoneyData";
+  static const String paymentAmount = "paymentAmount";
+  static const String paymentDetails = "paymentDetails";
+  static const String isTransferMoney = "isTransferMoney";
+  static const String isRequestMoney = "isRequestMoney";
+  static const String isCardPayment = "isCardPayment";
+  static const String isBankPayment = "isBankPayment";
+  static const String isNetBankingPayment = "isNetBankingPayment";
+  static const String isDataRecharge = "isDataRecharge";
+  static const String walletAmount = "walletAmount";
+  static const String isPayMoney = "isPayMoney";
+  static const String isTvSubscription = "isTvSubscription";
+  static const String isElectricityBill = "isElectricityBill";
+  static const String senderUserId = "senderUserId";
+  static const String completeTransactionDetails = "completeTransactionDetails";
+  static const String isWithdrawMoney = "isWithdrawMoney";
+  static const String isWithdrawMoneyToBank = "isWithdrawMoneyToBank";
+  static const String services = "services";
+  static const String senderProfileImage = "senderProfileImage";
+  static const String senderName = "senderName";
+}

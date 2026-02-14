@@ -1,0 +1,62 @@
+class ApiConstants {
+  //Auth APIS
+  static const String apiSignUp = "user/sign-up";
+  static const String apiVerifyOTP = "user/verify-otp";
+  static const String apiResendOTP = "user/resend-otp";
+  static const String apiLogin = "user/sign-in";
+  static const String apiForgetPassword = "user/forgot-password";
+  static const String apiUploadDocuments = "user/upload-document";
+  static const String apiResetPassword = "user/reset-password";
+  static const String apiChangePassword = "user/change-password";
+  static const String apiChangePin = "user/transaction-pin";
+  static const String apiGetDocuments = "user/my-documents";
+  static const String apiDeleteDocument = "user/document";
+  static const String apiGetProfile = "user/profile";
+  static const String apiTransactionPin = "user/transaction-pin";
+  static const String apiContactSync = "user/contact-sync";
+  static const String apiCms = "user/cms";
+  static const String apiBankAccount = "user/bank-account";
+  static const String apiKycVerification = "user/kyc-verification";
+  static const String apiUploadProfilePicture = "user/profile-picture";
+  static const String apiBankDetails = "user-account";
+  static const String apiDeleteBankAccount = "user-account";
+  static const String apiSetPrimaryBankAccount = "user-account/primary";
+  static const String apiTransferMoneyList = "user-account/requests";
+  static const String apiNotificationList = "notification";
+  static const String apiReadNotification = "notification/read";
+  static const String apiTopUpWallet = "user-account/top-up";
+  static const String apiApproveRequest = "user-account/approve-request";
+  static const String apiDeclineRequest = "user-account/decline-request";
+  static const String apiMoneyRequest = "user-account/request";
+  static const String apiValidatePin = "user/validate-pin";
+  static const String apiMyTransaction = "user-account/my-transactions";
+  static const String apiWalletOverview = "user/my-wallet";
+  static const String apiQRDetails = "user-account/qr-details";
+  static const String apiGlobalSearch = "user/search";
+  static const String apiAddDevice = "device";
+  static const String apiCreateSupportTicket = "support-ticket";
+  static const String apiHone = "user-account/home";
+  static const String apiPayMoney = "user-account/transfer";
+  static const String apiGetTransactionListWithUser =
+      "user-account/transaction";
+  static const String apiMerchantHome = "user-account/merchant-home";
+  static const String apiValidAmount = "user-account/validate-request-amount";
+  static const String apiWithdrawMoney = "user-account/withdraw-money";
+  static const String apiCategoryList = "support-ticket/categories";
+  static const String apiWithdrawCheckout = "user-account/withdraw-checkout";
+  static const String apiUpdateAccountSettings = "user/account-setting";
+  static const String apiDataPlan = "user-account/data-plan";
+  static const String apiUtilityRecharge = "user-account/recharge";
+  static const String apiTvSubscription = "user-account/tvSubscription";
+  static const String apiBillPayment = "user-account/pay-electricity-bill";
+  static const String apiRequestStatement = "user-account/statement";
+  static const String apiVerifySmartCardNumber = "user-account/checkSmartCardNumber";
+  static const String apiVerifyMeterNumber = "user-account/checkMeterNumber";
+  static const String apiBankList = "user/bank-list";
+  static const String apiSetPrimaryCard = "user-account/card/primary";
+  static const String apiDeleteCard = "user-account/card";
+  static const String apiCardDetails = "user-account/card";
+  static const String apiAddCard = "user/verify-card-reference";
+  static const String apiAccessCode = "user-account/get-access-code";
+
+}

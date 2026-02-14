@@ -1,0 +1,191 @@
+{
+  "project_info": {
+    "project_number": "815705552603",
+    "firebase_url": "https://paymish-app.firebaseio.com",
+    "project_id": "paymish-app",
+    "storage_bucket": "paymish-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:815705552603:android:05e8a6b35c92f2798c3efe",
+        "android_client_info": {
+          "package_name": "com.paymish.paymish.merchant.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "815705552603-e6qieqi0vicagek19c2vk2js7krtl6ft.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbsbAWrRIlUR2n36MpqA-5O25J1Tj3oYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "815705552603-e6qieqi0vicagek19c2vk2js7krtl6ft.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "815705552603-9eutkjd3rhr57o1n8dji17386sokp586.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.paymish.paymish.user.dev"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:815705552603:android:6817db21f99b4d718c3efe",
+        "android_client_info": {
+          "package_name": "com.paymish.paymish.merchant.stage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "815705552603-e6qieqi0vicagek19c2vk2js7krtl6ft.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbsbAWrRIlUR2n36MpqA-5O25J1Tj3oYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "815705552603-e6qieqi0vicagek19c2vk2js7krtl6ft.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "815705552603-9eutkjd3rhr57o1n8dji17386sokp586.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.paymish.paymish.user.dev"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:815705552603:android:c931fc8ea3fe7cb28c3efe",
+        "android_client_info": {
+          "package_name": "com.paymish.paymish.user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "815705552603-e6qieqi0vicagek19c2vk2js7krtl6ft.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbsbAWrRIlUR2n36MpqA-5O25J1Tj3oYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "815705552603-e6qieqi0vicagek19c2vk2js7krtl6ft.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "815705552603-9eutkjd3rhr57o1n8dji17386sokp586.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.paymish.paymish.user.dev"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:815705552603:android:dde59af733ac351d8c3efe",
+        "android_client_info": {
+          "package_name": "com.paymish.paymish.user.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "815705552603-e6qieqi0vicagek19c2vk2js7krtl6ft.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbsbAWrRIlUR2n36MpqA-5O25J1Tj3oYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "815705552603-e6qieqi0vicagek19c2vk2js7krtl6ft.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "815705552603-9eutkjd3rhr57o1n8dji17386sokp586.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.paymish.paymish.user.dev"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:815705552603:android:ef60b643d467fa818c3efe",
+        "android_client_info": {
+          "package_name": "com.paymish.paymish.user.stage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "815705552603-e6qieqi0vicagek19c2vk2js7krtl6ft.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbsbAWrRIlUR2n36MpqA-5O25J1Tj3oYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "815705552603-e6qieqi0vicagek19c2vk2js7krtl6ft.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "815705552603-9eutkjd3rhr57o1n8dji17386sokp586.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.paymish.paymish.user.dev"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
