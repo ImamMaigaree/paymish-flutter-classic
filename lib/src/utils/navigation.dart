@@ -225,9 +225,13 @@ class NavigationUtils {
       case routeChatScreen:
         return MaterialPageRoute(
             builder: (_) => ChatScreen(
-                  senderUserId: args[NavigationParams.senderUserId],
-                  senderProfileImage: args[NavigationParams.senderProfileImage],
-                  senderName: args[NavigationParams.senderName],
+                  senderUserId:
+                      (args[NavigationParams.senderUserId] as int?) ?? 0,
+                  senderProfileImage:
+                      (args[NavigationParams.senderProfileImage] as String?) ??
+                          '',
+                  senderName:
+                      (args[NavigationParams.senderName] as String?) ?? '',
                 ));
       case routeChangePassword:
         return MaterialPageRoute(builder: (_) => ChangePasswordScreen());

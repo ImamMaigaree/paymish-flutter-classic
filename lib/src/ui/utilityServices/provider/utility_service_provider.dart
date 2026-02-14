@@ -18,13 +18,17 @@ class UtilityServiceProvider extends ChangeNotifier {
   }
 
   String get amount {
-    String amount;
-    amount = _selectedDataPlan.variationAmount ?? '';
-    return amount;
+    if (_amount.isNotEmpty) {
+      return _amount;
+    }
+    return _selectedDataPlan.variationAmount ?? '';
   }
 
   void setSelectedDataPlan(DataPlanItem selectedPlan) {
     _selectedDataPlan = selectedPlan;
+    if ((_selectedDataPlan.variationAmount ?? '').isNotEmpty) {
+      _amount = _selectedDataPlan.variationAmount ?? '';
+    }
     notifyListeners();
   }
 

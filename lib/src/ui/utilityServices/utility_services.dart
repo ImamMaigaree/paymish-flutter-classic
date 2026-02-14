@@ -61,6 +61,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
 
   TextEditingController _amountController = TextEditingController();
   TextEditingController _customerNameController = TextEditingController();
+  final FocusNode _amountFocus = FocusNode();
 
   final TextEditingController _smartCardNumberController =
       TextEditingController();
@@ -78,6 +79,17 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
     });
     _getBankDetails();
     paystackPlugin.initialize(publicKey: payStackKey ?? '');
+  }
+
+  @override
+  void dispose() {
+    _amountFocus.dispose();
+    _amountController.dispose();
+    _customerNameController.dispose();
+    _phoneNumberController.dispose();
+    _smartCardNumberController.dispose();
+    _meterNumberController.dispose();
+    super.dispose();
   }
 
   @override
@@ -172,9 +184,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
                               : const SizedBox(),
                           _getPhoneNumberTextField(context),
                           const SizedBox(height: spacingLarge),
-                          _getAmountTextField(context,
-                                  myModel.selectedDataPlan.variationAmount ??
-                                      ''),
+                          _getAmountTextField(context, myModel.amount),
                           const SizedBox(height: spacingLarge),
                           widget.services.identifier == DicParams.tvSubscription
                               ? _getSmartCardNumberTextField(context)
@@ -315,9 +325,10 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
   }
 
   Widget _getAmountTextField(BuildContext context, String amount) {
-    _amountController = TextEditingController(text: amount);
+    _syncAmountController(amount);
     return PaymishTextField(
       controller: _amountController,
+      focusNode: _amountFocus,
       hint: Localization.of(context).hintEnterAmount,
       label: Localization.of(context).hintEnterAmount,
       enabled: (widget.services.identifier == DicParams.airtime) ||
@@ -329,6 +340,10 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
       ],
       type: const TextInputType.numberWithOptions(decimal: true, signed: false),
       textInputAction: TextInputAction.done,
+      onChanged: (value) {
+        Provider.of<UtilityServiceProvider>(context, listen: false)
+            .setAmount(value);
+      },
       onFieldSubmitted: (_) {
         FocusScope.of(context).requestFocus(FocusNode());
       },
@@ -343,6 +358,22 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
                 widget.services.maximumAmount ?? 0)
             : null;
       },
+    );
+  }
+
+  void _syncAmountController(String amount) {
+    if (amount.isEmpty) {
+      return;
+    }
+    if (_amountController.text == amount) {
+      return;
+    }
+    if (_amountFocus.hasFocus) {
+      return;
+    }
+    _amountController.text = amount;
+    _amountController.selection = TextSelection.fromPosition(
+      TextPosition(offset: _amountController.text.length),
     );
   }
 
@@ -396,7 +427,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
       controller: _meterNumberController,
       hint: Localization.of(context).labelMeterNumber,
       label: Localization.of(context).labelMeterNumber,
-      maxLength: 20,
+      maxLength: 13,
       type: TextInputType.number,
       onChanged: (value) {
         _isNumberChanged = true;
@@ -405,8 +436,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
         FilteringTextInputFormatter.digitsOnly
       ],
       validateFunction: (value) {
-        return Utils.isEmpty(
-            context, value ?? '', Localization.of(context).errorMeterNumber);
+        return Utils.isValidMeterNumber(context, value);
       },
     );
   }

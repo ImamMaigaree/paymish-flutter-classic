@@ -129,6 +129,16 @@ class Utils {
     }
   }
 
+  static String? isValidMeterNumber(BuildContext context, String? value) {
+    final meterValue = (value ?? '').trim();
+    if (meterValue.isEmpty) {
+      return Localization.of(context).errorMeterNumber;
+    } else if (meterValue.length != 13) {
+      return Localization.of(context).errorInvalidMeterNumber;
+    }
+    return null;
+  }
+
   static String? isPinValueSame(
       BuildContext context, String value1, String value2, String errorText) {
     if (value1.isEmpty) {
