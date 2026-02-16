@@ -50,31 +50,41 @@ class _UploadDocumentScreenState extends State<UploadDocumentScreen> {
   List<MyDocumentsModel> _filesForCorporate = <MyDocumentsModel>[];
   final ImagePicker _picker = ImagePicker();
   String _userType = '';
+  bool _didInitLocalizedDocs = false;
 
   @override
   void initState() {
     super.initState();
     _userType = getString(PreferenceKey.businessCategories) ?? '';
-    _getData();
     if (!widget.isFromUpload) {
       _getDocumentsApiCall();
     }
   }
 
-  void _getData() {
-    setState(() {
-      _filesForIndividual = [
-        MyDocumentsModel(documentType: Localization.of(context).idCard),
-        MyDocumentsModel(documentType: Localization.of(context).bankStatement)
-      ];
-      _filesForCorporate = [
-        MyDocumentsModel(documentType: Localization.of(context).cacCertificate),
-        MyDocumentsModel(documentType: Localization.of(context).cacFormA),
-        MyDocumentsModel(
-            documentType: Localization.of(context).meansOfIdentification),
-        MyDocumentsModel(documentType: Localization.of(context).utilitybill)
-      ];
-    });
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didInitLocalizedDocs) {
+      return;
+    }
+    _didInitLocalizedDocs = true;
+    _initDocumentTemplates();
+  }
+
+  void _initDocumentTemplates() {
+    _filesForIndividual = [
+      MyDocumentsModel(documentType: Localization.of(context).idCard),
+      MyDocumentsModel(documentType: Localization.of(context).bankStatement)
+    ];
+    _filesForCorporate = [
+      MyDocumentsModel(documentType: Localization.of(context).cacCertificate),
+      MyDocumentsModel(documentType: Localization.of(context).cacFormA),
+      MyDocumentsModel(documentType: Localization.of(context).meansOfIdentification),
+      MyDocumentsModel(documentType: Localization.of(context).utilitybill)
+    ];
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -161,63 +171,74 @@ class _UploadDocumentScreenState extends State<UploadDocumentScreen> {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          Container(
-            height: 225,
-            margin: const EdgeInsets.only(top: 10.0),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(
-                color: ColorUtils.homeBackgroundColor,
+          InkWell(
+            onTap: () {
+              if ((file.isApproved ?? 0) == 0) {
+                if (Platform.isIOS) {
+                  _getImageSourceActionSheet(file: file);
+                } else {
+                  _getImageSourceBottomSheet(file: file);
+                }
+              }
+            },
+            child: Container(
+              height: 225,
+              margin: const EdgeInsets.only(top: 10.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: ColorUtils.homeBackgroundColor,
+                ),
+                borderRadius: BorderRadius.circular(8.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(20),
+                    blurRadius: 20.0,
+                  )
+                ],
               ),
-              borderRadius: BorderRadius.circular(8.0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha(20),
-                  blurRadius: 20.0,
-                )
-              ],
-            ),
-            child: Stack(
-                    clipBehavior: Clip.none, alignment: AlignmentDirectional.topEnd,
-                    fit: StackFit.expand,
-                    children: [
-                      file.type == DocumentExt.img.getName() &&
-                              (file.document?.isNotEmpty ?? false)
-                          ? Image.network(
-                              file.document ?? '',
-                              fit: BoxFit.cover,
-                            )
-                          : Image.asset(ImageConstants.icPDF),
-                      (file.isApproved ?? 0) == 0
-                          ? Positioned(
-                              top: -10,
-                              right: -10,
-                              child: InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    file.id = null;
-                                    file.document = null;
-                                  });
-                                },
-                                child: Container(
-                                  height: 30,
-                                  width: 30,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15.0),
-                                    color: ColorUtils.primaryColor,
-                                  ),
-                                  child: Image.asset(
-                                    ImageConstants.icClose,
-                                    scale: 2.5,
+              child: Stack(
+                      clipBehavior: Clip.none, alignment: AlignmentDirectional.topEnd,
+                      fit: StackFit.expand,
+                      children: [
+                        file.type == DocumentExt.img.getName() &&
+                                (file.document?.isNotEmpty ?? false)
+                            ? Image.network(
+                                file.document ?? '',
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(ImageConstants.icPDF),
+                        (file.isApproved ?? 0) == 0
+                            ? Positioned(
+                                top: -10,
+                                right: -10,
+                                child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      file.id = null;
+                                      file.document = null;
+                                    });
+                                  },
+                                  child: Container(
+                                    height: 30,
+                                    width: 30,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      color: ColorUtils.primaryColor,
+                                    ),
+                                    child: Image.asset(
+                                      ImageConstants.icClose,
+                                      scale: 2.5,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            )
-                          : Container()
-                    ],
-                  ),
+                              )
+                            : Container()
+                      ],
+                    ),
+            ),
           ),
         ],
       ),
