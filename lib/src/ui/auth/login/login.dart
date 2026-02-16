@@ -371,6 +371,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> callLoginApi(int deviceId) async {
+    debugPrint("LOGIN: isUserApp=${isUserApp()} userType=${isUserApp() ? '' : UserType.merchant.getName()}");
+    debugPrint("LOGIN: mobile=${_phoneNumberController.text.trim()} deviceId=$deviceId");
     await UserApiManager()
         .login(ReqLogin(
             mobile: _phoneNumberController.text.trim(),
@@ -378,6 +380,7 @@ class _LoginScreenState extends State<LoginScreen> {
             deviceId: deviceId,
             userType: isUserApp() ? '' : UserType.merchant.getName()))
         .then((value) async {
+      debugPrint("LOGIN: success userId=${value.user?.id} role=${value.user?.role} approved=${value.user?.isApprovedByAdmin}");
       final user = value.user;
       if (user == null) {
         DialogUtils.showAlertDialog(
@@ -434,6 +437,11 @@ class _LoginScreenState extends State<LoginScreen> {
       ProgressDialogUtils.dismissProgressDialog();
     }).catchError((dynamic e) {
       ProgressDialogUtils.dismissProgressDialog();
+      if (e is ResBaseModel) {
+        debugPrint("LOGIN: failed code=${e.code} error=${e.error} message=${e.message} mobileVerified=${e.errorLogin?.isMobileVerified} emailVerified=${e.errorLogin?.isEmailVerified}");
+      } else {
+        debugPrint("LOGIN: failed error=$e");
+      }
       if (e is ResBaseModel) {
         final errorLogin = e.errorLogin;
         if ((errorLogin?.isMobileVerified ?? 1) == 0) {
