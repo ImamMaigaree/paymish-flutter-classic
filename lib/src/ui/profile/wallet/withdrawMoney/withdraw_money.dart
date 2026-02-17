@@ -18,7 +18,6 @@ import '../../../../widgets/header_with_amount.dart';
 import '../../../../widgets/paymish_appbar.dart';
 import '../../../../widgets/paymish_primary_button.dart';
 import '../../../../widgets/paymish_text_field.dart';
-import 'model/req_checkout_withdraw_amount.dart';
 import 'provider/withdraw_money_provider.dart';
 
 // ignore: must_be_immutable
@@ -227,13 +226,13 @@ class _WithDrawMoneyScreenState extends State<WithDrawMoneyScreen> {
   Future<void> _checkoutWithdrawMoneyAmount(
       {required BuildContext context, required num value}) async {
     await UserApiManager()
-        .checkoutWithdrawMoney(ReqCheckoutWithdrawMoney(amount: value))
+        .feeQuoteWithdraw(amount: value)
         .then((value) {
       // If API response is SUCCESS
       Provider.of<WithdrawMoneyProvider>(context, listen: false)
           .setAmountData(value);
       setState(() {
-        _payAbleAmount = value.data?.amount ?? 0;
+        _payAbleAmount = value.data?.netPayable ?? value.data?.amount ?? 0;
         _charges =
             (value.data?.withdrawalCharges ?? 0) +
                 (value.data?.withdrawalVatAmount ?? 0);

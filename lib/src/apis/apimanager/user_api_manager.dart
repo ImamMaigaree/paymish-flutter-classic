@@ -453,6 +453,22 @@ class UserApiManager {
     }
   }
 
+  // Fee quote for withdrawals (server-driven)
+  Future<ResCheckoutWithdrawMoney> feeQuoteWithdraw({required num amount}) async {
+    try {
+      final response = await ApiService().get(
+        ApiConstants.apiFeeQuote,
+        params: <String, String>{
+          "txType": "withdraw",
+          "amount": "$amount",
+        },
+      );
+      return ResCheckoutWithdrawMoney.fromJson(response.data);
+    } on DioException catch (error) {
+      throw ResBaseModel.fromJsonWithCode(error.response);
+    }
+  }
+
   // TopUp Wallet
   Future<ResTopUpWallet> topUpWallet(ReqTopUpWallet reqTopUpWallet) async {
     try {

@@ -111,7 +111,7 @@ class BankCardRadioList extends StatelessWidget {
       NavigationUtils.push(context, routeTransactionPin, arguments: {
         NavigationParams.paymentAmount: amount,
         NavigationParams.paymentDetails:
-            ReqWithdrawMoneyToBank(amount: amount, accountId: bankDetail.id ?? 0),
+            ReqWithdrawMoneyToBank(amount: amount, requestedAmount: amount, accountId: bankDetail.id ?? 0),
         NavigationParams.isWithdrawMoneyToBank: true,
         NavigationParams.isBankPayment: false,
         NavigationParams.isTransferMoney: false,
