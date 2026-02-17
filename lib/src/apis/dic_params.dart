@@ -150,6 +150,7 @@ class DicParams {
   static const String withdrawalVatPercentage = "withdrawalVatPercentage";
   static const String withdrawalCharges = "withdrawalCharges";
   static const String withdrawalVatAmount = "withdrawalVatAmount";
+  static const String netPayable = "netPayable";
   static const String isEmailNotification = "isEmailNotification";
   static const String isPushNotification = "isPushNotification";
   static const String senderName = "senderName";

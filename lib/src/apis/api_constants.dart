@@ -43,6 +43,7 @@ class ApiConstants {
   static const String apiValidAmount = "user-account/validate-request-amount";
   static const String apiWithdrawMoney = "user-account/withdraw-money";
   static const String apiCategoryList = "support-ticket/categories";
+  static const String apiFeeQuote = "fees/quote";
   static const String apiWithdrawCheckout = "user-account/withdraw-checkout";
   static const String apiUpdateAccountSettings = "user/account-setting";
   static const String apiDataPlan = "user-account/data-plan";
