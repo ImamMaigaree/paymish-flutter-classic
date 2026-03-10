@@ -18,13 +18,12 @@ class PaymishAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isCloseIcon;
 
   const PaymishAppBar(
-      {Key? key,
+      {super.key,
       required this.title,
       required this.isBackGround,
       this.isCloseIcon = false,
       this.isHideBackButton = false,
-      this.isFromAuth = true})
-      : super(key: key);
+      this.isFromAuth = true});
 
   @override
   Size get preferredSize => Size.fromHeight(isHideBackButton

@@ -20,8 +20,7 @@ class PaymishHomeAppbar extends StatelessWidget
   final ValueNotifier<bool> _isUpdate = ValueNotifier<bool>(false);
 
   PaymishHomeAppbar(
-      {Key? key, this.titleVisible = false, this.isBackGround = false})
-      : super(key: key);
+      {super.key, this.titleVisible = false, this.isBackGround = false});
 
   @override
   Size get preferredSize => const Size.fromHeight(80.0);

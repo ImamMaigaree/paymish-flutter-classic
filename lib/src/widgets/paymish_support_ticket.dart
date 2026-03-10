@@ -16,14 +16,14 @@ class PaymishSupportTicket extends StatelessWidget {
   final GestureTapCallback? onClick;
 
   const PaymishSupportTicket({
-    Key? key,
+    super.key,
     required this.titleText,
     required this.categoryText,
     required this.statusText,
     required this.detailsText,
     required this.date,
     this.onClick,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

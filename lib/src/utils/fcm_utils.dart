@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
@@ -17,49 +19,93 @@ import 'notification_constants.dart';
 import 'preference_key.dart';
 import 'preference_utils.dart';
 
-Future<void> registerNotification(BuildContext context) async {
+bool _isMessagingListenersRegistered = false;
+
+Future<void> configureFirebaseMessaging() async {
   final firebaseMessaging = FirebaseMessaging.instance;
-  await firebaseMessaging.requestPermission(
+  await firebaseMessaging.setAutoInitEnabled(true);
+  await firebaseMessaging.setForegroundNotificationPresentationOptions(
     alert: true,
     badge: true,
     sound: true,
   );
-
-  registerLocalNotifications(context);
-
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    FlutterAppBadger.updateBadgeCount(1);
-    showNotification(message);
-  });
-
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    navigateToScreen(
-      context: context,
-      message: _remoteMessageToMap(message),
-      fromNotification: true,
-    );
-  });
-
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+}
 
-  final initialMessage = await firebaseMessaging.getInitialMessage();
-  if (initialMessage != null) {
-    navigateToScreen(
-      context: context,
-      message: _remoteMessageToMap(initialMessage),
-      fromNotification: true,
-    );
+Future<String> getFcmTokenSafely({
+  Duration timeout = const Duration(seconds: 10),
+}) async {
+  try {
+    final token = await FirebaseMessaging.instance.getToken().timeout(timeout);
+    return token ?? "";
+  } on TimeoutException {
+    debugPrint("FCM: token request timed out, continuing without token");
+    return "";
+  } catch (e) {
+    debugPrint("FCM: token request failed, continuing without token. error=$e");
+    return "";
   }
 }
 
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // Optionally handle background messages.
+Future<void> registerNotification(BuildContext context) async {
+  final firebaseMessaging = FirebaseMessaging.instance;
+  try {
+    await firebaseMessaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+  } catch (e) {
+    debugPrint("FCM: requestPermission failed. error=$e");
+  }
+
+  registerLocalNotifications(context);
+
+  if (!_isMessagingListenersRegistered) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      FlutterAppBadger.updateBadgeCount(1);
+      showNotification(message);
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      navigateToScreen(
+        context: context,
+        message: _remoteMessageToMap(message),
+        fromNotification: true,
+      );
+    });
+
+    _isMessagingListenersRegistered = true;
+  }
+
+  try {
+    final initialMessage = await firebaseMessaging.getInitialMessage();
+    if (initialMessage != null) {
+      navigateToScreen(
+        context: context,
+        message: _remoteMessageToMap(initialMessage),
+        fromNotification: true,
+      );
+    }
+  } catch (e) {
+    debugPrint("FCM: getInitialMessage failed. error=$e");
+  }
 }
 
-void navigateToScreen(
-    {required BuildContext context,
-    required Map<String, dynamic> message,
-    required bool fromNotification}) {
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  try {
+    await Firebase.initializeApp();
+  } catch (_) {
+    // Firebase may already be initialized in this isolate.
+  }
+}
+
+void navigateToScreen({
+  required BuildContext context,
+  required Map<String, dynamic> message,
+  required bool fromNotification,
+}) {
   switch (Platform.isAndroid
       ? message[DicParams.data][DicParams.actionType]
       : message[DicParams.actionType]) {
@@ -74,10 +120,16 @@ void navigateToScreen(
       break;
     case NotificationConstants.support:
       getString(PreferenceKey.routeName) == routeSupportTickets
-          ? NavigationUtils.pushReplacement(context, routeSupportTickets,
-              arguments: {NavigationParams.showBackButton: true})
-          : NavigationUtils.push(context, routeSupportTickets,
-              arguments: {NavigationParams.showBackButton: true});
+          ? NavigationUtils.pushReplacement(
+              context,
+              routeSupportTickets,
+              arguments: {NavigationParams.showBackButton: true},
+            )
+          : NavigationUtils.push(
+              context,
+              routeSupportTickets,
+              arguments: {NavigationParams.showBackButton: true},
+            );
       break;
     case NotificationConstants.chat:
       openChatScreen(context, message);
@@ -98,32 +150,48 @@ void navigateToScreen(
 }
 
 void openSupportChatScreen(BuildContext context, Map<String, dynamic> message) {
-  final ticketId = int.parse(Platform.isAndroid
-      ? message[DicParams.data][DicParams.ticketId]
-      : message[DicParams.ticketId]);
+  final ticketId = int.parse(
+    Platform.isAndroid
+        ? message[DicParams.data][DicParams.ticketId]
+        : message[DicParams.ticketId],
+  );
   if (Provider.of<SupportChatProvider>(context, listen: false).ticketId !=
       ticketId) {
     if (Provider.of<SupportChatProvider>(context, listen: false).isScreenOpen) {
-      NavigationUtils.pushReplacement(context, routeSupportTicketsChat,
-          arguments: {NavigationParams.senderUserId: ticketId});
+      NavigationUtils.pushReplacement(
+        context,
+        routeSupportTicketsChat,
+        arguments: {NavigationParams.senderUserId: ticketId},
+      );
     } else {
-      NavigationUtils.push(context, routeSupportTicketsChat,
-          arguments: {NavigationParams.senderUserId: ticketId});
+      NavigationUtils.push(
+        context,
+        routeSupportTicketsChat,
+        arguments: {NavigationParams.senderUserId: ticketId},
+      );
     }
   }
 }
 
 void openChatScreen(BuildContext context, Map<String, dynamic> message) {
-  final userId = int.parse(Platform.isAndroid
-      ? message[DicParams.data][DicParams.userId]
-      : message[DicParams.userId]);
+  final userId = int.parse(
+    Platform.isAndroid
+        ? message[DicParams.data][DicParams.userId]
+        : message[DicParams.userId],
+  );
   if (Provider.of<ChatProvider>(context, listen: false).userId != userId) {
     if (Provider.of<ChatProvider>(context, listen: false).isScreenOpen) {
-      NavigationUtils.pushReplacement(context, routeChatScreen,
-          arguments: {NavigationParams.senderUserId: userId});
+      NavigationUtils.pushReplacement(
+        context,
+        routeChatScreen,
+        arguments: {NavigationParams.senderUserId: userId},
+      );
     } else {
-      NavigationUtils.push(context, routeChatScreen,
-          arguments: {NavigationParams.senderUserId: userId});
+      NavigationUtils.push(
+        context,
+        routeChatScreen,
+        arguments: {NavigationParams.senderUserId: userId},
+      );
     }
   }
 }
@@ -141,7 +209,7 @@ Map<String, dynamic> _remoteMessageToMap(RemoteMessage message) {
       "alert": {
         "title": message.notification?.title,
         "body": message.notification?.body,
-      }
+      },
     };
   }
   return map;

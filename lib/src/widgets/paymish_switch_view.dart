@@ -12,11 +12,11 @@ class PaymishSwitchView extends StatelessWidget {
   final VoidCallback onButtonClick;
 
   const PaymishSwitchView({
-    Key? key,
+    super.key,
     required this.value,
     required this.title,
     required this.onButtonClick,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

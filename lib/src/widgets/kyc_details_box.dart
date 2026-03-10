@@ -14,7 +14,7 @@ import '../utils/preference_utils.dart';
 class KycDetailsBox extends StatelessWidget {
   final String bvnNo;
 
-  const KycDetailsBox({Key? key, this.bvnNo = ''}) : super(key: key);
+  const KycDetailsBox({super.key, this.bvnNo = ''});
 
   @override
   Widget build(BuildContext context) {

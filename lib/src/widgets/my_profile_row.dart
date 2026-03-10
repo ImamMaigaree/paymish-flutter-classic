@@ -10,8 +10,7 @@ class MyProfileRow extends StatelessWidget {
   final GestureTapCallback? onTap;
 
   const MyProfileRow(
-      {Key? key, required this.image, required this.title, this.onTap})
-      : super(key: key);
+      {super.key, required this.image, required this.title, this.onTap});
 
   @override
   Widget build(BuildContext context) {
