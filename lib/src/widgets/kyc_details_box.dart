@@ -43,26 +43,27 @@ class KycDetailsBox extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: getString(PreferenceKey.kycStatus) ==
+                  child:
+                      getString(PreferenceKey.kycStatus) ==
                           DicParams.notVerified
                       ? GestureDetector(
                           onTap: () {
-                            NavigationUtils.push(context, routeCompleteKYC,
-                                arguments: {
-                                  NavigationParams.showBackButton: true,
-                                  NavigationParams.completeTransactionDetails:
-                                      false
-                                });
+                            NavigationUtils.push(
+                              context,
+                              routeCompleteKYC,
+                              arguments: {
+                                NavigationParams.showBackButton: true,
+                                NavigationParams.completeTransactionDetails:
+                                    false,
+                              },
+                            );
                           },
                           child: Text(
                             Localization.of(context).verifyNowLabel,
                             style: const TextStyle(color: Colors.red),
                           ),
                         )
-                      : Image.asset(
-                          ImageConstants.icVerified,
-                          scale: 2.0,
-                        ),
+                      : Image.asset(ImageConstants.icVerified, scale: 2.0),
                 ),
               ],
             ),
@@ -80,11 +81,10 @@ class KycDetailsBox extends StatelessWidget {
                       Text(
                         getString(PreferenceKey.bvnNumber).isEmpty
                             ? ""
-                            : """${getString(PreferenceKey.bvnNumber).substring(0, 1)}XXXXXXXXX${getString(PreferenceKey.bvnNumber).substring(getString(PreferenceKey.bvnNumber).toString().length - 1, getString(PreferenceKey.bvnNumber).toString().length)}""",
+                            : getString(PreferenceKey.bvnNumber),
                         style: const TextStyle(
                           fontFamily: fontFamilyPoppinsRegular,
                           fontSize: 12.0,
-                          letterSpacing: 3.0,
                         ),
                       ),
                     ],

@@ -26,9 +26,11 @@ class CompleteKYCScreen extends StatelessWidget {
   final bool showBackButton;
   final bool completeTransactionDetails;
 
-  CompleteKYCScreen(
-      {Key? key, this.showBackButton = false, this.completeTransactionDetails = false})
-      : super(key: key);
+  CompleteKYCScreen({
+    Key? key,
+    this.showBackButton = false,
+    this.completeTransactionDetails = false,
+  }) : super(key: key);
 
   final TextEditingController _bvnNumberController = TextEditingController();
 
@@ -58,7 +60,9 @@ class CompleteKYCScreen extends StatelessWidget {
                         ? const SizedBox()
                         : Padding(
                             padding: const EdgeInsets.only(
-                                left: spacingXLarge, top: spacingXXXXXLarge),
+                              left: spacingXLarge,
+                              top: spacingXXXXXLarge,
+                            ),
                             child: Text(
                               Localization.of(context).completeKycLabel,
                               style: const TextStyle(
@@ -71,10 +75,11 @@ class CompleteKYCScreen extends StatelessWidget {
                           ),
                     Padding(
                       padding: const EdgeInsets.only(
-                          left: spacingLarge,
-                          right: spacingLarge,
-                          bottom: spacingXXXLarge,
-                          top: spacingLarge),
+                        left: spacingLarge,
+                        right: spacingLarge,
+                        bottom: spacingXXXLarge,
+                        top: spacingLarge,
+                      ),
                       child: Text(
                         Localization.of(context).completeKycLabelDescription,
                         style: const TextStyle(
@@ -85,25 +90,31 @@ class CompleteKYCScreen extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(
-                          left: spacingLarge,
-                          right: spacingLarge,
-                          bottom: spacingXXXXXLarge),
+                        left: spacingLarge,
+                        right: spacingLarge,
+                        bottom: spacingLarge,
+                      ),
                       child: PaymishTextField(
                         controller: _bvnNumberController,
                         hint: Localization.of(context).bvnNumber,
                         label: Localization.of(context).bvnNumber,
                         type: TextInputType.number,
                         textInputFormatter: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly
+                          FilteringTextInputFormatter.digitsOnly,
                         ],
                         maxLength: 11,
                         validateFunction: (value) {
-                          return Utils.isValidBVN(
-                            context,
-                            value,
-                          );
+                          return Utils.isValidBVN(context, value);
                         },
                       ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: spacingLarge,
+                        right: spacingLarge,
+                        bottom: spacingXXXXXLarge,
+                      ),
+                      child: _buildKycCheckCard(),
                     ),
                   ],
                 ),
@@ -116,9 +127,10 @@ class CompleteKYCScreen extends StatelessWidget {
                     ? Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(
-                              left: spacingLarge,
-                              right: spacingSmall,
-                              bottom: spacingLarge),
+                            left: spacingLarge,
+                            right: spacingSmall,
+                            bottom: spacingLarge,
+                          ),
                           child: PaymishPrimaryButton(
                             buttonText: Localization.of(context).labelSkip,
                             isBackground: false,
@@ -130,9 +142,10 @@ class CompleteKYCScreen extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(
-                        left: spacingSmall,
-                        right: spacingLarge,
-                        bottom: spacingLarge),
+                      left: spacingSmall,
+                      right: spacingLarge,
+                      bottom: spacingLarge,
+                    ),
                     child: PaymishPrimaryButton(
                       buttonText: Localization.of(context).verifyLabel,
                       isBackground: true,
@@ -145,9 +158,41 @@ class CompleteKYCScreen extends StatelessWidget {
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildKycCheckCard() {
+    return Container(
+      padding: const EdgeInsets.all(spacingMedium),
+      decoration: BoxDecoration(
+        color: const Color(0xffF1F8F9),
+        border: Border.all(color: const Color(0xffCAE0E5)),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: const Column(
+        children: [
+          _KycCheckRow(
+            icon: Icons.check_circle_rounded,
+            color: Color(0xff1f7a32),
+            text: 'BVN format valid',
+          ),
+          SizedBox(height: spacingTiny),
+          _KycCheckRow(
+            icon: Icons.check_circle_rounded,
+            color: Color(0xff1f7a32),
+            text: 'Consent captured',
+          ),
+          SizedBox(height: spacingTiny),
+          _KycCheckRow(
+            icon: Icons.pending_rounded,
+            color: Color(0xff8b5a00),
+            text: 'NIN check pending',
+          ),
+        ],
       ),
     );
   }
@@ -156,40 +201,51 @@ class CompleteKYCScreen extends StatelessWidget {
     ProgressDialogUtils.showProgressDialog(context);
     UserApiManager()
         .setKYCVerification(
-            ReqKycVerification(bvnNumber: _bvnNumberController.text.trim()))
+          ReqKycVerification(bvnNumber: _bvnNumberController.text.trim()),
+        )
         .then((value) async {
-      ProgressDialogUtils.dismissProgressDialog();
-      await DialogUtils.displayToast(value.message ?? '');
-      await _updateSharedPref();
-      if (completeTransactionDetails) {
-        if (getInt(PreferenceKey.isBankAccount) == 0) {
-          NavigationUtils.pushReplacement(context, routeWalletSetup,
-              arguments: {NavigationParams.showBackButton: true});
-        } else if (getInt(PreferenceKey.isTransactionPin) == 0) {
-          NavigationUtils.pushReplacement(context, routeTransactionPinSetup,
-              arguments: {NavigationParams.showBackButton: true});
-        } else {
-          NavigationUtils.pop(context);
-        }
-      } else if (showBackButton) {
-        NavigationUtils.pop(context);
-      } else {
-        await NavigationUtils.pushAndRemoveUntil(context, routeWalletSetup,
-            arguments: {NavigationParams.showBackButton: false});
-      }
-    }).catchError((dynamic e) {
-      ProgressDialogUtils.dismissProgressDialog();
-      if (e is ResBaseModel) {
-        if (!checkSessionExpire(e, context)) {
-          debugPrint(e.error);
-          DialogUtils.showAlertDialog(context, e.error ?? '');
-        } else {
-          DialogUtils.showAlertDialog(context, e.message ?? '');
-        }
-      } else {
-        DialogUtils.showAlertDialog(context, e.toString());
-      }
-    });
+          ProgressDialogUtils.dismissProgressDialog();
+          await DialogUtils.displayToast(value.message ?? '');
+          await _updateSharedPref();
+          if (completeTransactionDetails) {
+            if (getInt(PreferenceKey.isBankAccount) == 0) {
+              NavigationUtils.pushReplacement(
+                context,
+                routeWalletSetup,
+                arguments: {NavigationParams.showBackButton: true},
+              );
+            } else if (getInt(PreferenceKey.isTransactionPin) == 0) {
+              NavigationUtils.pushReplacement(
+                context,
+                routeTransactionPinSetup,
+                arguments: {NavigationParams.showBackButton: true},
+              );
+            } else {
+              NavigationUtils.pop(context);
+            }
+          } else if (showBackButton) {
+            NavigationUtils.pop(context);
+          } else {
+            await NavigationUtils.pushAndRemoveUntil(
+              context,
+              routeWalletSetup,
+              arguments: {NavigationParams.showBackButton: false},
+            );
+          }
+        })
+        .catchError((dynamic e) {
+          ProgressDialogUtils.dismissProgressDialog();
+          if (e is ResBaseModel) {
+            if (!checkSessionExpire(e, context)) {
+              debugPrint(e.error);
+              DialogUtils.showAlertDialog(context, e.error ?? '');
+            } else {
+              DialogUtils.showAlertDialog(context, e.message ?? '');
+            }
+          } else {
+            DialogUtils.showAlertDialog(context, e.toString());
+          }
+        });
   }
 
   Future _updateSharedPref() async {
@@ -209,7 +265,42 @@ class CompleteKYCScreen extends StatelessWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty<bool>('showBackButton', showBackButton));
-    properties.add(DiagnosticsProperty<bool>(
-        'completeTransactionDetails', completeTransactionDetails));
+    properties.add(
+      DiagnosticsProperty<bool>(
+        'completeTransactionDetails',
+        completeTransactionDetails,
+      ),
+    );
+  }
+}
+
+class _KycCheckRow extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String text;
+
+  const _KycCheckRow({
+    required this.icon,
+    required this.color,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: spacingMedium, color: color),
+        const SizedBox(width: spacingTiny),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: fontSmall,
+              fontFamily: fontFamilyPoppinsRegular,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

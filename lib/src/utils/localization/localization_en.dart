@@ -272,7 +272,7 @@ class LocalizationEN implements Localization {
 
   @override
   String get completeKycLabelDescription =>
-      "Please provide following details to complete \nyour KYC process:";
+      "Tier 1: BVN or NIN. Tier 2/3: BVN + NIN.";
 
   @override
   String get bvnNumber => "BVN Number";
@@ -457,7 +457,7 @@ class LocalizationEN implements Localization {
       "Please enter Phone Number or Email address";
 
   @override
-  String get bankStatement => "Bank Statement";
+  String get bankStatement => "Proof of Address";
 
   @override
   String get cacCertificate => "CAC Certificate";
@@ -1008,7 +1008,8 @@ class LocalizationEN implements Localization {
   String get errorMeterNumber => "Please enter Meter Number";
 
   @override
-  String get errorInvalidMeterNumber => "Please enter a valid 13-digit meter number";
+  String get errorInvalidMeterNumber =>
+      "Please enter a valid 13-digit meter number";
 
   @override
   String get labelMeterNumber => "Meter Number";
