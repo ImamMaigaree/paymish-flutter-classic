@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 
 import '../../../apis/apimanager/user_api_manager.dart';
 import '../../../apis/base_model.dart';
@@ -25,11 +26,10 @@ import 'model/res_wallet_overview.dart';
 class MyWalletScreen extends StatefulWidget {
   final bool isFromBottomNavigation;
 
-  const MyWalletScreen({Key? key, this.isFromBottomNavigation = false})
-      : super(key: key);
+  const MyWalletScreen({super.key, this.isFromBottomNavigation = false});
 
   @override
-  _MyWalletScreenState createState() => _MyWalletScreenState();
+  State<MyWalletScreen> createState() => _MyWalletScreenState();
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -42,6 +42,7 @@ class MyWalletScreen extends StatefulWidget {
 // ignore: prefer_mixin
 class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
   ResWalletOverview _list = ResWalletOverview();
+  bool _isProvisioningVirtualAccount = false;
 
   @override
   void initState() {
@@ -95,7 +96,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
                     Image.asset(ImageConstants.icWalletCard),
                     // Card Details
                     FutureBuilder<ResWalletOverview>(
-                      future: _walletOverviewRequest(context),
+                      future: _walletOverviewRequest(),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
                           return Container();
@@ -124,11 +125,11 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
                             children: [
                               nameAndWalletIdWidget(
                                   firstName:
-                                      getString(PreferenceKey.firstName) ?? '',
+                                      getString(PreferenceKey.firstName),
                                   lastName:
-                                      getString(PreferenceKey.lastName) ?? '',
+                                      getString(PreferenceKey.lastName),
                                   walletId:
-                                      getString(PreferenceKey.qrCode) ?? ''),
+                                      getString(PreferenceKey.qrCode)),
                               currentWalletBalanceWidget(
                                   currentBalance: 0, isLoading: true),
                             ],
@@ -140,6 +141,8 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
                 ),
               ),
               const SizedBox(height: spacingXXLarge),
+              dedicatedBankTransferWidget(),
+              const SizedBox(height: spacingLarge),
               getString(PreferenceKey.role) != DicParams.roleMerchant
                   ? PaymishMenuListItem(
                       titleText: Localization.of(context).labelAddMoney,
@@ -203,9 +206,9 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
               left: spacingXLarge, top: spacingXLarge, right: spacingXLarge),
           child: Text(
             getString(PreferenceKey.role) == DicParams.roleUser
-                ? "${getString(PreferenceKey.firstName) ?? ''} "
-                    "${getString(PreferenceKey.lastName) ?? ''}"
-                : getString(PreferenceKey.businessName) ?? '',
+                ? "${getString(PreferenceKey.firstName)} "
+                    "${getString(PreferenceKey.lastName)}"
+                : getString(PreferenceKey.businessName),
             style: const TextStyle(
               color: Colors.white,
               fontSize: fontXMLarge,
@@ -304,26 +307,178 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
     );
   }
 
-  // Wallet Overview API
-  Future<ResWalletOverview> _walletOverviewRequest(BuildContext context) async {
-    await UserApiManager().walletOverview().then((value) {
-      // If API response is SUCCESS
-      _list = value;
-    }).catchError((dynamic e) {
-      // If API response is FAILURE or ANY EXCEPTION
+  Widget dedicatedBankTransferWidget() {
+    final virtualAccount = _list.data?.virtualAccount;
+    final eligibility = _list.data?.virtualAccountEligibility;
+    final canProvision = eligibility?.eligible == true && virtualAccount == null;
+
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: const EdgeInsets.all(spacingMedium),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE7ECF3)),
+      ),
+      child: virtualAccount != null
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Dedicated Bank Transfer",
+                  style: TextStyle(
+                    color: ColorUtils.primaryColor,
+                    fontSize: fontMedium,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: fontFamilyPoppinsMedium,
+                  ),
+                ),
+                const SizedBox(height: spacingSmall),
+                Text(
+                  virtualAccount.bankName ?? "SQUAD",
+                  style: const TextStyle(
+                    color: ColorUtils.blackColor,
+                    fontSize: fontSmall,
+                    fontFamily: fontFamilyPoppinsRegular,
+                  ),
+                ),
+                const SizedBox(height: spacingSmall),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        virtualAccount.virtualAccountNumber ?? '',
+                        style: const TextStyle(
+                          color: ColorUtils.blackColor,
+                          fontSize: fontLarge,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: fontFamilyPoppinsMedium,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        final accountNumber =
+                            virtualAccount.virtualAccountNumber ?? '';
+                        if (accountNumber.isEmpty) {
+                          return;
+                        }
+                        await Clipboard.setData(
+                            ClipboardData(text: accountNumber));
+                        DialogUtils.displayToast("Account number copied");
+                      },
+                      child: const Text("Copy"),
+                    ),
+                  ],
+                ),
+                Text(
+                  virtualAccount.virtualAccountName ??
+                      "Paymish Wallet Funding",
+                  style: const TextStyle(
+                    color: ColorUtils.blackColor,
+                    fontSize: fontSmall,
+                    fontFamily: fontFamilyPoppinsLight,
+                  ),
+                ),
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Dedicated Bank Transfer",
+                  style: TextStyle(
+                    color: ColorUtils.primaryColor,
+                    fontSize: fontMedium,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: fontFamilyPoppinsMedium,
+                  ),
+                ),
+                const SizedBox(height: spacingSmall),
+                Text(
+                  canProvision
+                      ? "Create your dedicated account to fund wallet via bank transfer."
+                      : "Complete KYC and admin approval to unlock dedicated account funding.",
+                  style: const TextStyle(
+                    color: ColorUtils.blackColor,
+                    fontSize: fontSmall,
+                    fontFamily: fontFamilyPoppinsRegular,
+                  ),
+                ),
+                if (canProvision) ...[
+                  const SizedBox(height: spacingMedium),
+                  SizedBox(
+                    height: 42,
+                    child: ElevatedButton(
+                      onPressed: _isProvisioningVirtualAccount
+                          ? null
+                          : () async {
+                              await _provisionVirtualAccount();
+                            },
+                      child: Text(
+                        _isProvisioningVirtualAccount
+                            ? "Creating..."
+                            : "Create Dedicated Account",
+                      ),
+                    ),
+                  ),
+                ]
+              ],
+            ),
+    );
+  }
+
+  Future<void> _provisionVirtualAccount() async {
+    setState(() {
+      _isProvisioningVirtualAccount = true;
+    });
+    try {
+      await UserApiManager().provisionVirtualAccount();
+      if (!mounted) {
+        return;
+      }
+      await _walletOverviewRequest();
+      if (mounted) {
+        setState(() {});
+      }
+      DialogUtils.displayToast("Dedicated account is ready");
+    } catch (e) {
       if (e is ResBaseModel) {
+        DialogUtils.displayToast(e.error ?? "Unable to create virtual account");
+      } else {
+        DialogUtils.displayToast("Unable to create virtual account");
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isProvisioningVirtualAccount = false;
+        });
+      }
+    }
+  }
+
+  // Wallet Overview API
+  Future<ResWalletOverview> _walletOverviewRequest() async {
+    try {
+      _list = await UserApiManager().walletOverview();
+    } catch (e) {
+      if (e is ResBaseModel) {
+        if (!mounted) {
+          return _list;
+        }
         DialogUtils.showAlertDialog(context, e.error ?? '');
       }
       // If Error occurs return amount as 0
       _list = ResWalletOverview(
         data: Data(
           walletBalance: 0,
-          firstName: getString(PreferenceKey.firstName) ?? '',
-          lastName: getString(PreferenceKey.lastName) ?? '',
-          qrCode: getString(PreferenceKey.qrCode) ?? '',
+          firstName: getString(PreferenceKey.firstName),
+          lastName: getString(PreferenceKey.lastName),
+          qrCode: getString(PreferenceKey.qrCode),
         ),
       );
-    });
+    }
     return _list;
   }
 }

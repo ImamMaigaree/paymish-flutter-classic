@@ -524,6 +524,8 @@ class UserApiManager {
   // Transaction Pin Validation
   Future<ResTransactionPinValidation> validatePin(
       ReqTransactionPinValidation pin, BuildContext context) async {
+    final invalidPinMessage =
+        Localization.of(context).errorEnterValidTransactionPin;
     try {
       final response = await ApiService().post(
         ApiConstants.apiValidatePin,
@@ -532,8 +534,7 @@ class UserApiManager {
       return ResTransactionPinValidation.fromJson(response.data);
     } on DioException catch (error) {
       // If pin is wrong, managed toast from here. (API response is 400 so.)
-      await DialogUtils.displayToast(
-          Localization.of(context).errorEnterValidTransactionPin);
+      await DialogUtils.displayToast(invalidPinMessage);
       throw ResBaseModel.fromJsonWithCode(error.response);
     }
   }
@@ -545,6 +546,18 @@ class UserApiManager {
         ApiConstants.apiWalletOverview,
       );
       return ResWalletOverview.fromJson(response.data);
+    } on DioException catch (error) {
+      throw ResBaseModel.fromJsonWithCode(error.response);
+    }
+  }
+
+  Future<ResBaseModel> provisionVirtualAccount() async {
+    try {
+      final response = await ApiService().post(
+        ApiConstants.apiProvisionVirtualAccount,
+        data: {},
+      );
+      return ResBaseModel.fromJson(response.data);
     } on DioException catch (error) {
       throw ResBaseModel.fromJsonWithCode(error.response);
     }

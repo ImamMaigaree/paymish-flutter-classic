@@ -31,6 +31,8 @@ class ApiConstants {
   static const String apiValidatePin = "user/validate-pin";
   static const String apiMyTransaction = "user-account/my-transactions";
   static const String apiWalletOverview = "user/my-wallet";
+  static const String apiProvisionVirtualAccount = "user/virtual-account/provision";
+  static const String apiGetVirtualAccount = "user/virtual-account";
   static const String apiQRDetails = "user-account/qr-details";
   static const String apiGlobalSearch = "user/search";
   static const String apiAddDevice = "device";
