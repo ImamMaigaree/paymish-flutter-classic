@@ -39,6 +39,7 @@ import '../ui/profile/wallet/addtowallet/add_money_wallet_payment_selectation.da
 import '../ui/profile/wallet/my_wallet.dart';
 import '../ui/profile/wallet/wallet_setup.dart';
 import '../ui/profile/wallet/withdrawMoney/withdraw_money.dart';
+import '../ui/profile/wallet/withdrawMoney/review_transfer.dart';
 import '../ui/tabbar/main_tabbar.dart';
 import '../ui/tabbar/merchant_main_tabbar.dart';
 import '../ui/transfermoney/pay_money.dart';
@@ -222,6 +223,13 @@ class NavigationUtils {
                       (args[NavigationParams.isWithdrawMoney] as bool?) ??
                           false,
                 ));
+      case routeReviewBankTransfer:
+        return MaterialPageRoute(
+          builder: (_) => ReviewBankTransferScreen(
+            amount: (args[NavigationParams.paymentAmount] as num?) ?? 0,
+            bankDetail: args[NavigationParams.paymentDetails],
+          ),
+        );
       case routeChatScreen:
         return MaterialPageRoute(
             builder: (_) => ChatScreen(

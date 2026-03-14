@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -33,14 +34,30 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
+Future<void> main() async {
+  await mainDelegate();
+}
+
 Future<void> mainDelegate() async {
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  await configureFirebaseMessaging();
+  await _initializeFirebaseSafely();
   await init();
   paystackPlugin.initialize(publicKey: payStackKey ?? '');
   runApp(const MyApp());
+}
+
+Future<void> _initializeFirebaseSafely() async {
+  try {
+    await Firebase.initializeApp().timeout(const Duration(seconds: 10));
+    await configureFirebaseMessaging().timeout(const Duration(seconds: 10));
+  } on TimeoutException catch (_) {
+    debugPrint("BOOT: Firebase init timed out, continuing app startup.");
+  } catch (e) {
+    debugPrint(
+      "BOOT: Firebase init failed, continuing app startup without FCM. error=$e",
+    );
+  }
 }
 
 // To Observe route and manage back flow with navigation

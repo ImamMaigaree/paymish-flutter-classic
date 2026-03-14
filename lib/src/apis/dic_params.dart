@@ -23,6 +23,9 @@ class DicParams {
   static const String businessName = "businessName";
   static const String firstName = "firstName";
   static const String lastName = "lastName";
+  static const String dateOfBirth = "dateOfBirth";
+  static const String gender = "gender";
+  static const String residentialAddress = "residentialAddress";
   static const String businessCategories = "businessCategories";
   static const String businessDescription = "businessDescription";
   static const String data = "data";

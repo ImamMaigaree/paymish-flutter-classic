@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../ui/paymentSetting/model/res_bank_details.dart';
-import '../ui/profile/transactionPin/model/req_withdraw_money_to_bank.dart';
 import '../utils/color_utils.dart';
 import '../utils/constants.dart';
 import '../utils/dimens.dart';
@@ -108,20 +107,9 @@ class BankCardRadioList extends StatelessWidget {
     // If(Wallet TopUp Payment) {Top Up Now}
     // Else {Navigate to Transaction Pin Screen}
     if (isWithdrawMoney) {
-      NavigationUtils.push(context, routeTransactionPin, arguments: {
+      NavigationUtils.push(context, routeReviewBankTransfer, arguments: {
         NavigationParams.paymentAmount: amount,
-        NavigationParams.paymentDetails:
-            ReqWithdrawMoneyToBank(amount: amount, requestedAmount: amount, accountId: bankDetail.id ?? 0),
-        NavigationParams.isWithdrawMoneyToBank: true,
-        NavigationParams.isBankPayment: false,
-        NavigationParams.isTransferMoney: false,
-        NavigationParams.isRequestMoney: false,
-        NavigationParams.isCardPayment: false,
-        NavigationParams.isNetBankingPayment: false,
-        NavigationParams.isPayMoney: false,
-        NavigationParams.isDataRecharge: false,
-        NavigationParams.isTvSubscription: false,
-        NavigationParams.isElectricityBill: false,
+        NavigationParams.paymentDetails: bankDetail,
       });
     } else if (isFromTopUpWallet) {
       NavigationUtils.push(context, routeTransactionPin, arguments: {

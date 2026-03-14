@@ -10,6 +10,9 @@ class ReqSignUp {
   String? businessName;
   String? businessCategories;
   String? businessDescription;
+  String? dateOfBirth;
+  String? gender;
+  String? residentialAddress;
 
   ReqSignUp(
       {this.firstName,
@@ -20,7 +23,10 @@ class ReqSignUp {
       this.role,
       this.businessName,
       this.businessCategories,
-      this.businessDescription});
+      this.businessDescription,
+      this.dateOfBirth,
+      this.gender,
+      this.residentialAddress});
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -33,6 +39,9 @@ class ReqSignUp {
     data[DicParams.businessName] = businessName;
     data[DicParams.businessCategories] = businessCategories;
     data[DicParams.businessDescription] = businessDescription;
+    data[DicParams.dateOfBirth] = dateOfBirth;
+    data[DicParams.gender] = gender;
+    data[DicParams.residentialAddress] = residentialAddress;
     return data;
   }
 }
