@@ -95,13 +95,16 @@ void handleReceivedMessage(dynamic msg) {
 }
 
 void handleReceivedOldMessagesList(dynamic msg) {
-  final data = ResSupportTicketOldMessage.fromJson(msg);
   final ctx = buildContext;
   if (ctx == null) return;
-  Provider.of<SupportChatProvider>(ctx, listen: false)
-      .setList(data.result?.message ?? <SupportChatMessage>[]);
-  Provider.of<SupportChatProvider>(ctx, listen: false)
-      .setIsTicketClosed(data.result?.ticketDetails?.status ?? '');
+  final provider = Provider.of<SupportChatProvider>(ctx, listen: false);
+  try {
+    final data = ResSupportTicketOldMessage.fromJson(msg);
+    provider.setList(data.result?.message ?? <SupportChatMessage>[]);
+    provider.setIsTicketClosed(data.result?.ticketDetails?.status ?? '');
+  } catch (_) {
+    provider.setLoading(false);
+  }
 }
 
 void handleReceiveUserMessage(dynamic msg) {

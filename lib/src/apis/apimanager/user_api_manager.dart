@@ -38,6 +38,7 @@ import '../../ui/profile/kyc/model/req_kyc_verification.dart';
 import '../../ui/profile/model/res_profile.dart';
 import '../../ui/profile/myTransaction/res_my_transaction_model.dart';
 import '../../ui/profile/supportTickets/model/res_support_ticket.dart';
+import '../../ui/profile/supportTickets/model/res_support_ticket_old_messages.dart';
 import '../../ui/profile/transactionPin/model/req_access_code.dart';
 import '../../ui/profile/transactionPin/model/req_transaction_pin.dart';
 import '../../ui/profile/transactionPin/model/req_transaction_pin_validation.dart';
@@ -524,6 +525,8 @@ class UserApiManager {
   // Transaction Pin Validation
   Future<ResTransactionPinValidation> validatePin(
       ReqTransactionPinValidation pin, BuildContext context) async {
+    final invalidPinMessage =
+        Localization.of(context).errorEnterValidTransactionPin;
     try {
       final response = await ApiService().post(
         ApiConstants.apiValidatePin,
@@ -532,8 +535,7 @@ class UserApiManager {
       return ResTransactionPinValidation.fromJson(response.data);
     } on DioException catch (error) {
       // If pin is wrong, managed toast from here. (API response is 400 so.)
-      await DialogUtils.displayToast(
-          Localization.of(context).errorEnterValidTransactionPin);
+      await DialogUtils.displayToast(invalidPinMessage);
       throw ResBaseModel.fromJsonWithCode(error.response);
     }
   }
@@ -545,6 +547,18 @@ class UserApiManager {
         ApiConstants.apiWalletOverview,
       );
       return ResWalletOverview.fromJson(response.data);
+    } on DioException catch (error) {
+      throw ResBaseModel.fromJsonWithCode(error.response);
+    }
+  }
+
+  Future<ResBaseModel> provisionVirtualAccount() async {
+    try {
+      final response = await ApiService().post(
+        ApiConstants.apiProvisionVirtualAccount,
+        data: {},
+      );
+      return ResBaseModel.fromJson(response.data);
     } on DioException catch (error) {
       throw ResBaseModel.fromJsonWithCode(error.response);
     }
@@ -583,6 +597,46 @@ class UserApiManager {
         ApiConstants.apiCategoryList,
       );
       return ResCategoryList.fromJson(response.data);
+    } on DioException catch (error) {
+      throw ResBaseModel.fromJsonWithCode(error.response);
+    }
+  }
+
+  Future<ResSupportTicketOldMessage> getSupportTicketMessages({
+    required int ticketId,
+    required int page,
+    required int limit,
+  }) async {
+    try {
+      final response = await ApiService().get(
+        ApiConstants.apiSupportTicketMessages,
+        params: {
+          DicParams.ticketId: ticketId,
+          DicParams.page: page,
+          DicParams.limit: limit,
+        },
+      );
+      return ResSupportTicketOldMessage.fromJson({
+        DicParams.result: response.data[DicParams.data] ?? {}
+      });
+    } on DioException catch (error) {
+      throw ResBaseModel.fromJsonWithCode(error.response);
+    }
+  }
+
+  Future<ResBaseModel> sendSupportTicketMessage({
+    required int ticketId,
+    required String message,
+  }) async {
+    try {
+      final response = await ApiService().post(
+        ApiConstants.apiSupportTicketMessages,
+        data: {
+          DicParams.ticketId: ticketId,
+          DicParams.message: message,
+        },
+      );
+      return ResBaseModel.fromJson(response.data);
     } on DioException catch (error) {
       throw ResBaseModel.fromJsonWithCode(error.response);
     }

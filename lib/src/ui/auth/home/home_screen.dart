@@ -20,9 +20,11 @@ import '../../../utils/navigation_params.dart';
 import '../../../utils/permission_util.dart';
 import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
+import '../../../utils/utils.dart';
 import '../../../widgets/common_permission_popup.dart';
 import '../../../widgets/paymish_home_appbar.dart';
 import '../../../widgets/recent_list_view.dart';
+import '../../profile/wallet/model/res_wallet_overview.dart';
 import 'model/res_home.dart';
 import 'provider/home_screen_provider.dart';
 
@@ -40,6 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final _availableBiometrics =
       ValueNotifier<List<BiometricType>>(<BiometricType>[]);
   ResHomeScreen? _homeScreenDataObject;
+  ResWalletOverview _walletOverviewObject = ResWalletOverview();
+  late Future<ResWalletOverview> _walletOverviewFuture;
 
   @override
   void initState() {
@@ -61,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
     registerNotification(context);
+    _walletOverviewFuture = _getWalletOverview();
   }
 
   void showContactPopupDialog() {
@@ -173,6 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      _buildWalletTile(),
                       (apiData?.utilities?.isNotEmpty ?? false)
                           ? _getUtilityView(apiData?.utilities ?? <Utilities>[])
                           : const SizedBox(),
@@ -201,6 +207,173 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
+  }
+
+  Widget _buildWalletTile() {
+    return FutureBuilder<ResWalletOverview>(
+      future: _walletOverviewFuture,
+      builder: (context, snapshot) {
+        final walletData = snapshot.data?.data ?? _walletOverviewObject.data;
+        final bool isLoading = snapshot.connectionState == ConnectionState.waiting;
+        final String accountNumber =
+            walletData?.virtualAccount?.virtualAccountNumber ?? '--';
+        final String bankName =
+            _resolveBankName(walletData?.virtualAccount?.bankName);
+        final num walletBalance = walletData?.walletBalance ?? 0;
+
+        return Container(
+          height: walletCardSize,
+          width: MediaQuery.of(context).size.width,
+          margin: const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 0.0),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(ImageConstants.icWalletCard, fit: BoxFit.fill),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  spacingXLarge,
+                  spacingXLarge,
+                  spacingXLarge,
+                  spacingLarge,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _resolveWalletDisplayName(walletData),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: fontXLarge,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: fontFamilyPoppinsRegular,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: spacingTiny),
+                        Text(
+                          bankName,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: fontSmall,
+                            fontFamily: fontFamilyPoppinsLight,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: spacing4),
+                        Text(
+                          accountNumber,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: fontSmall,
+                            fontFamily: fontFamilyPoppinsLight,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (isLoading)
+                          const SizedBox(
+                            height: spacingLarge,
+                            width: spacingLarge,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        else
+                          RichText(
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            text: TextSpan(
+                              text: countryCurrency,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: fontXLarge,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: fontFamilySFMonoMedium,
+                              ),
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text:
+                                      " ${Utils.currencyFormat.format(walletBalance)}",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: fontXLarge,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: fontFamilyPoppinsMedium,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        const SizedBox(height: spacingTiny),
+                        Text(
+                          Localization.of(context).labelCurrentWalletStatement,
+                          style: const TextStyle(
+                            color: ColorUtils.walletBalanceColor,
+                            fontSize: fontSmall,
+                            fontFamily: fontFamilyPoppinsLight,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _resolveWalletDisplayName(Data? walletData) {
+    if (getString(PreferenceKey.role) == DicParams.roleMerchant) {
+      final businessName = getString(PreferenceKey.businessName).trim();
+      return businessName.isEmpty ? '--' : businessName;
+    }
+    final firstName =
+        (walletData?.firstName ?? getString(PreferenceKey.firstName)).trim();
+    final lastName =
+        (walletData?.lastName ?? getString(PreferenceKey.lastName)).trim();
+    final fullName = "$firstName $lastName".trim();
+    return fullName.isEmpty ? '--' : fullName;
+  }
+
+  String _resolveBankName(String? bankName) {
+    final normalized = (bankName ?? '').trim().toUpperCase();
+    if (normalized.isEmpty || normalized == 'SQUAD') {
+      return 'GTBank';
+    }
+    return bankName ?? 'GTBank';
+  }
+
+  Future<ResWalletOverview> _getWalletOverview() async {
+    try {
+      _walletOverviewObject = await UserApiManager().walletOverview();
+    } catch (_) {
+      _walletOverviewObject = ResWalletOverview(
+        data: Data(
+          firstName: getString(PreferenceKey.firstName),
+          lastName: getString(PreferenceKey.lastName),
+          walletBalance: 0,
+        ),
+      );
+    }
+    return _walletOverviewObject;
   }
 
   // To get all the bank list
@@ -259,6 +432,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _getUtilityView(List<Utilities> utilityList) {
+    final filteredUtilities = utilityList
+        .where((item) => !_shouldHideUtilityCategory(item.name))
+        .toList();
     return Container(
       margin: const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 0.0),
       decoration: BoxDecoration(
@@ -266,17 +442,20 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Colors.white,
       ),
       padding: const EdgeInsets.only(
-          left: spacingMedium, right: spacingMedium, bottom: spacingMedium),
+        left: spacingMedium,
+        right: spacingMedium,
+        bottom: spacingMedium,
+      ),
       child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Airtime Recharge
-                for (var item in utilityList)
-                  _getUtilityWidgets(
-                      title: item.name?.toString() ?? "",
-                      utilityServices: item.services ?? <Services>[])
-              ],
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          for (var item in filteredUtilities)
+            _getUtilityWidgets(
+              title: item.name?.toString() ?? "",
+              utilityServices: item.services ?? <Services>[],
             ),
+        ],
+      ),
     );
   }
 
@@ -375,5 +554,17 @@ class _HomeScreenState extends State<HomeScreen> {
       NavigationUtils.push(context, routeUtilityServices,
           arguments: {NavigationParams.services: utilityService});
     }
+  }
+
+  String _normalizeUtilityCategoryName(String? name) {
+    return (name ?? "").toLowerCase().trim().replaceAll(RegExp(r"\s+"), " ");
+  }
+
+  bool _shouldHideUtilityCategory(String? name) {
+    final normalizedName = _normalizeUtilityCategoryName(name);
+    return normalizedName == "insurance" ||
+        normalizedName == "other merchants/services" ||
+        normalizedName == "other merchants / services" ||
+        normalizedName == "other merchants services";
   }
 }

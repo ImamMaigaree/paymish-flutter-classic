@@ -25,23 +25,27 @@ import 'model/res_wallet_overview.dart';
 class MyWalletScreen extends StatefulWidget {
   final bool isFromBottomNavigation;
 
-  const MyWalletScreen({Key? key, this.isFromBottomNavigation = false})
-      : super(key: key);
+  const MyWalletScreen({super.key, this.isFromBottomNavigation = false});
 
   @override
-  _MyWalletScreenState createState() => _MyWalletScreenState();
+  State<MyWalletScreen> createState() => _MyWalletScreenState();
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>(
-        'isFromBottomNavigation', isFromBottomNavigation));
+    properties.add(
+      DiagnosticsProperty<bool>(
+        'isFromBottomNavigation',
+        isFromBottomNavigation,
+      ),
+    );
   }
 }
 
 // ignore: prefer_mixin
 class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
   ResWalletOverview _list = ResWalletOverview();
+  bool _isProvisioningVirtualAccount = false;
 
   @override
   void initState() {
@@ -95,7 +99,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
                     Image.asset(ImageConstants.icWalletCard),
                     // Card Details
                     FutureBuilder<ResWalletOverview>(
-                      future: _walletOverviewRequest(context),
+                      future: _walletOverviewRequest(),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
                           return Container();
@@ -108,12 +112,21 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
                             mainAxisSize: MainAxisSize.max,
                             children: [
                               nameAndWalletIdWidget(
-                                  firstName: data?.firstName ?? '',
-                                  lastName: data?.lastName ?? '',
-                                  walletId: data?.qrCode ?? ''),
+                                firstName: data?.firstName ?? '',
+                                lastName: data?.lastName ?? '',
+                                accountNumber:
+                                    data
+                                        ?.virtualAccount
+                                        ?.virtualAccountNumber ??
+                                    '',
+                                bankName: _resolveBankName(
+                                  data?.virtualAccount?.bankName,
+                                ),
+                              ),
                               currentWalletBalanceWidget(
-                                  currentBalance: data?.walletBalance ?? 0,
-                                  isLoading: false),
+                                currentBalance: data?.walletBalance ?? 0,
+                                isLoading: false,
+                              ),
                             ],
                           );
                         } else {
@@ -123,23 +136,35 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
                             mainAxisSize: MainAxisSize.max,
                             children: [
                               nameAndWalletIdWidget(
-                                  firstName:
-                                      getString(PreferenceKey.firstName) ?? '',
-                                  lastName:
-                                      getString(PreferenceKey.lastName) ?? '',
-                                  walletId:
-                                      getString(PreferenceKey.qrCode) ?? ''),
+                                firstName: getString(PreferenceKey.firstName),
+                                lastName: getString(PreferenceKey.lastName),
+                                accountNumber:
+                                    _list
+                                        .data
+                                        ?.virtualAccount
+                                        ?.virtualAccountNumber ??
+                                    '',
+                                bankName: _resolveBankName(
+                                  _list.data?.virtualAccount?.bankName,
+                                ),
+                              ),
                               currentWalletBalanceWidget(
-                                  currentBalance: 0, isLoading: true),
+                                currentBalance: 0,
+                                isLoading: true,
+                              ),
                             ],
                           );
                         }
                       },
-                    )
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: spacingXXLarge),
+              if (_list.data?.virtualAccount == null) ...[
+                const SizedBox(height: spacingXXLarge),
+                dedicatedBankTransferWidget(),
+                const SizedBox(height: spacingLarge),
+              ],
               getString(PreferenceKey.role) != DicParams.roleMerchant
                   ? PaymishMenuListItem(
                       titleText: Localization.of(context).labelAddMoney,
@@ -168,21 +193,28 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
   }
 
   void labelMainTabAddMoneyClick() {
-    NavigationUtils.push(context, routeAddMoneyToWallet,
-        arguments: {
-          NavigationParams.walletAmount: _list.data?.walletBalance ?? 0
-        });
+    NavigationUtils.push(
+      context,
+      routeAddMoneyToWallet,
+      arguments: {
+        NavigationParams.walletAmount: _list.data?.walletBalance ?? 0,
+      },
+    );
   }
 
   void labelWithdrawMoneyToBankClick() {
     if ((_list.data?.walletBalance ?? 0) != 0) {
-      NavigationUtils.push(context, routeWithdrawMoney,
-          arguments: {
-            NavigationParams.walletAmount: _list.data?.walletBalance ?? 0
-          });
+      NavigationUtils.push(
+        context,
+        routeWithdrawMoney,
+        arguments: {
+          NavigationParams.walletAmount: _list.data?.walletBalance ?? 0,
+        },
+      );
     } else {
       DialogUtils.displayToast(
-          Localization.of(context).msgInsufficientWalletBalance);
+        Localization.of(context).msgInsufficientWalletBalance,
+      );
     }
   }
 
@@ -190,22 +222,27 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
     NavigationUtils.push(context, routeRequestStatement);
   }
 
-  Widget nameAndWalletIdWidget(
-      {String firstName = '',
-      String lastName = '',
-      String walletId = ''}) {
+  Widget nameAndWalletIdWidget({
+    String firstName = '',
+    String lastName = '',
+    String accountNumber = '',
+    String bankName = 'GTBank',
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
           padding: const EdgeInsets.only(
-              left: spacingXLarge, top: spacingXLarge, right: spacingXLarge),
+            left: spacingXLarge,
+            top: spacingXLarge,
+            right: spacingXLarge,
+          ),
           child: Text(
             getString(PreferenceKey.role) == DicParams.roleUser
-                ? "${getString(PreferenceKey.firstName) ?? ''} "
-                    "${getString(PreferenceKey.lastName) ?? ''}"
-                : getString(PreferenceKey.businessName) ?? '',
+                ? "${getString(PreferenceKey.firstName)} "
+                      "${getString(PreferenceKey.lastName)}"
+                : getString(PreferenceKey.businessName),
             style: const TextStyle(
               color: Colors.white,
               fontSize: fontXMLarge,
@@ -223,14 +260,32 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
             right: spacingXLarge,
           ),
           child: Text(
-            "${Localization.of(context).labelWalletId}\n$walletId",
+            bankName,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: fontSmall,
+              fontWeight: FontWeight.normal,
+              fontFamily: fontFamilyPoppinsLight,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+            top: spacingXSmall,
+            left: spacingXLarge,
+            right: spacingXLarge,
+          ),
+          child: Text(
+            accountNumber.isEmpty ? '--' : accountNumber,
             style: const TextStyle(
               color: Colors.white,
               fontSize: fontSmall,
               fontWeight: FontWeight.normal,
               fontFamily: fontFamilyPoppinsLight,
             ),
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -238,8 +293,10 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
     );
   }
 
-  Widget currentWalletBalanceWidget(
-      {num currentBalance = 0, bool isLoading = false}) {
+  Widget currentWalletBalanceWidget({
+    num currentBalance = 0,
+    bool isLoading = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
@@ -249,6 +306,45 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
             top: spacingSmall,
             left: spacingXLarge,
             right: spacingXLarge,
+          ),
+          child: isLoading
+              ? const SizedBox(
+                  height: fontXLarge,
+                  width: fontXLarge,
+                  child: CircularProgressIndicator(),
+                )
+              : RichText(
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  text: TextSpan(
+                    text: countryCurrency,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: fontXLarge,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: fontFamilySFMonoMedium,
+                    ),
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: currentBalance != 0.0
+                            ? """ ${Utils.currencyFormat.format(currentBalance)}"""
+                            : " ${0.0}",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: fontXLarge,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: fontFamilyPoppinsMedium,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+            left: spacingXLarge,
+            right: spacingXLarge,
+            bottom: spacingLarge,
           ),
           child: Text(
             Localization.of(context).labelCurrentWalletStatement,
@@ -262,68 +358,137 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(
-            left: spacingXLarge,
-            right: spacingXLarge,
-            bottom: spacingXLarge,
-          ),
-          child: isLoading
-              ? const SizedBox(
-                  height: fontXLarge,
-                  width: fontXLarge,
-                  child: CircularProgressIndicator(),
-                )
-              : RichText(
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  text: TextSpan(
-                      text: countryCurrency,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: fontXLarge,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: fontFamilySFMonoMedium,
-                      ),
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: currentBalance != 0.0
-                              ? """ ${Utils.currencyFormat.format(currentBalance)}"""
-                              : " ${0.0}",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: fontXLarge,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: fontFamilyPoppinsMedium,
-                          ),
-                        )
-                      ]),
-                ),
-        ),
       ],
     );
   }
 
-  // Wallet Overview API
-  Future<ResWalletOverview> _walletOverviewRequest(BuildContext context) async {
-    await UserApiManager().walletOverview().then((value) {
-      // If API response is SUCCESS
-      _list = value;
-    }).catchError((dynamic e) {
-      // If API response is FAILURE or ANY EXCEPTION
+  Widget dedicatedBankTransferWidget() {
+    final virtualAccount = _list.data?.virtualAccount;
+    final eligibility = _list.data?.virtualAccountEligibility;
+    final canProvision =
+        eligibility?.eligible == true && virtualAccount == null;
+    final bool isKycVerified = eligibility?.kycVerified == true;
+
+    if (virtualAccount != null) {
+      return const SizedBox.shrink();
+    }
+
+    final helperMessage = canProvision
+        ? "Create your dedicated account to fund wallet via bank transfer."
+        : isKycVerified
+        ? "Account review in progress. Dedicated account will unlock after admin approval."
+        : "Complete KYC and admin approval to unlock dedicated account funding.";
+
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: const EdgeInsets.all(spacingMedium),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE7ECF3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Dedicated Bank Transfer",
+            style: TextStyle(
+              color: ColorUtils.primaryColor,
+              fontSize: fontMedium,
+              fontWeight: FontWeight.w600,
+              fontFamily: fontFamilyPoppinsMedium,
+            ),
+          ),
+          const SizedBox(height: spacingSmall),
+          Text(
+            helperMessage,
+            style: const TextStyle(
+              color: ColorUtils.blackColor,
+              fontSize: fontSmall,
+              fontFamily: fontFamilyPoppinsRegular,
+            ),
+          ),
+          if (canProvision) ...[
+            const SizedBox(height: spacingMedium),
+            SizedBox(
+              height: 42,
+              child: ElevatedButton(
+                onPressed: _isProvisioningVirtualAccount
+                    ? null
+                    : () async {
+                        await _provisionVirtualAccount();
+                      },
+                child: Text(
+                  _isProvisioningVirtualAccount
+                      ? "Creating..."
+                      : "Create Dedicated Account",
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _resolveBankName(String? bankName) {
+    final normalized = (bankName ?? '').trim().toUpperCase();
+    if (normalized.isEmpty || normalized == 'SQUAD') {
+      return 'GTBank';
+    }
+    return bankName ?? 'GTBank';
+  }
+
+  Future<void> _provisionVirtualAccount() async {
+    setState(() {
+      _isProvisioningVirtualAccount = true;
+    });
+    try {
+      await UserApiManager().provisionVirtualAccount();
+      if (!mounted) {
+        return;
+      }
+      await _walletOverviewRequest();
+      if (mounted) {
+        setState(() {});
+      }
+      DialogUtils.displayToast("Dedicated account is ready");
+    } catch (e) {
       if (e is ResBaseModel) {
+        DialogUtils.displayToast(e.error ?? "Unable to create virtual account");
+      } else {
+        DialogUtils.displayToast("Unable to create virtual account");
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isProvisioningVirtualAccount = false;
+        });
+      }
+    }
+  }
+
+  // Wallet Overview API
+  Future<ResWalletOverview> _walletOverviewRequest() async {
+    try {
+      _list = await UserApiManager().walletOverview();
+    } catch (e) {
+      if (e is ResBaseModel) {
+        if (!mounted) {
+          return _list;
+        }
         DialogUtils.showAlertDialog(context, e.error ?? '');
       }
       // If Error occurs return amount as 0
       _list = ResWalletOverview(
         data: Data(
           walletBalance: 0,
-          firstName: getString(PreferenceKey.firstName) ?? '',
-          lastName: getString(PreferenceKey.lastName) ?? '',
-          qrCode: getString(PreferenceKey.qrCode) ?? '',
+          firstName: getString(PreferenceKey.firstName),
+          lastName: getString(PreferenceKey.lastName),
+          qrCode: getString(PreferenceKey.qrCode),
         ),
       );
-    });
+    }
     return _list;
   }
 }
