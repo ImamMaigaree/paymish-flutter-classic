@@ -27,20 +27,19 @@ class ApiService {
     _dio = initApiServiceDio();
   }
 
-  BaseOptions _buildBaseOptions(String baseUrl) {
-    return BaseOptions(
+  Dio initApiServiceDio() {
+    _cancelToken = CancelToken();
+    final baseOption = BaseOptions(
       connectTimeout: const Duration(seconds: 60),
       receiveTimeout: const Duration(seconds: 60),
-      baseUrl: baseUrl,
+      baseUrl: apiBaseUrl,
       contentType: 'application/json',
       headers: {
         'authorization': "Bearer ${getString(PreferenceKey.token)}",
       },
     );
-  }
-
-  InterceptorsWrapper _buildInterceptorsWrapper() {
-    return InterceptorsWrapper(
+    mDio.options = baseOption;
+    final mInterceptorsWrapper = InterceptorsWrapper(
       onRequest: (options, handler) {
         debugPrint("$tag queryParameters ${options.queryParameters.toString()}",
             wrapWidth: 1024);
@@ -62,20 +61,7 @@ class ApiService {
         handler.next(e);
       },
     );
-  }
-
-  Dio _buildScopedClient(String baseUrl) {
-    final dio = Dio(_buildBaseOptions(baseUrl));
-    dio.interceptors.add(_buildInterceptorsWrapper());
-    return dio;
-  }
-
-  Dio initApiServiceDio() {
-    _cancelToken = CancelToken();
-    final baseOption = _buildBaseOptions(apiBaseUrl);
-    mDio.options = baseOption;
-    mDio.interceptors.clear();
-    mDio.interceptors.add(_buildInterceptorsWrapper());
+    mDio.interceptors.add(mInterceptorsWrapper);
     return mDio;
   }
 
@@ -129,37 +115,6 @@ class ApiService {
         cancelToken: cancelToken ?? _cancelToken,
         options: options,
       ));
-    } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout) {
-        return Future.error(ResBaseModel(error: "Poor internet connection"));
-      }
-      rethrow;
-    }
-  }
-
-  Future<Response> postWithBaseUrl(
-    String baseUrl,
-    String endUrl, {
-    Map<String, dynamic>? data,
-    Map<String, dynamic>? params,
-    Options? options,
-    CancelToken? cancelToken,
-    bool isFormData = false,
-  }) async {
-    try {
-      final isConnected = await checkInternet();
-      if (!isConnected) {
-        return Future.error(ResBaseModel(error: "Internet not connected"));
-      }
-
-      final scopedClient = _buildScopedClient(baseUrl);
-      return await scopedClient.post(
-        endUrl,
-        data: isFormData ? FormData.fromMap(data ?? {}) : data,
-        queryParameters: params,
-        cancelToken: cancelToken ?? _cancelToken,
-        options: options,
-      );
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout) {
         return Future.error(ResBaseModel(error: "Poor internet connection"));

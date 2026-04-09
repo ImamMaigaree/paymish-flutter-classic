@@ -9,9 +9,9 @@ import '../../../../utils/localization/localization.dart';
 import '../../../../utils/navigation.dart';
 import '../../../../utils/progress_dialog.dart';
 import '../../../../utils/utils.dart';
-import '../../../../widgets/one_trust_appbar.dart';
-import '../../../../widgets/one_trust_primary_button.dart';
-import '../../../../widgets/one_trust_text_field.dart';
+import '../../../../widgets/paymish_appbar.dart';
+import '../../../../widgets/paymish_primary_button.dart';
+import '../../../../widgets/paymish_text_field.dart';
 import 'model/req_change_pin.dart';
 
 // ignore: must_be_immutable
@@ -30,7 +30,7 @@ class ChangePinScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: Localization.of(context).lblChangePin,
         isBackGround: false,
         isFromAuth: false,
@@ -62,7 +62,7 @@ class ChangePinScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingLarge),
-      child: OneTrustPrimaryButton(
+      child: PaymishPrimaryButton(
         buttonText: Localization.of(context).labelSave,
         isBackground: true,
         onButtonClick: () => _savePressed(context),
@@ -73,7 +73,7 @@ class ChangePinScreen extends StatelessWidget {
   Widget confirmNewPinFieldWidget(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: spacingXLarge, right: spacingXLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         controller: _confirmNewPinController,
         hint: Localization.of(context).lblConfirmNewPin,
         label: Localization.of(context).lblConfirmNewPin,
@@ -104,7 +104,7 @@ class ChangePinScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingXLarge, right: spacingXLarge, bottom: spacingXLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         controller: _oldPinController,
         hint: Localization.of(context).lblOldPin,
         label: Localization.of(context).lblOldPin,
@@ -135,7 +135,7 @@ class ChangePinScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingXLarge, right: spacingXLarge, bottom: spacingXLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         controller: _newPinController,
         hint: Localization.of(context).lblNewPin,
         label: Localization.of(context).lblNewPin,

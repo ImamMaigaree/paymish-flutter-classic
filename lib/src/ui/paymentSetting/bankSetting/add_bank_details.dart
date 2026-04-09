@@ -14,9 +14,9 @@ import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/one_trust_appbar.dart';
-import '../../../widgets/one_trust_primary_button.dart';
-import '../../../widgets/one_trust_text_field.dart';
+import '../../../widgets/paymish_appbar.dart';
+import '../../../widgets/paymish_primary_button.dart';
+import '../../../widgets/paymish_text_field.dart';
 import '../../profile/wallet/model/req_wallet_setup.dart';
 import '../model/res_bank_list.dart';
 
@@ -55,7 +55,7 @@ class _AddBankDetailsScreenState extends State<AddBankDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: Localization.of(context).labelAddBankDetails,
         isBackGround: false,
       ),
@@ -141,7 +141,7 @@ class _AddBankDetailsScreenState extends State<AddBankDetailsScreen> {
     return Container(
       padding: const EdgeInsets.only(
           top: spacingMedium, left: spacingLarge, right: spacingLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         textInputAction: TextInputAction.next,
         focusNode: _accountNumberFocus,
         onSaved: (value) {
@@ -168,7 +168,7 @@ class _AddBankDetailsScreenState extends State<AddBankDetailsScreen> {
     return Container(
       padding: const EdgeInsets.only(
           top: spacingMedium, left: spacingLarge, right: spacingLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         textInputAction: TextInputAction.next,
         focusNode: _userNameFocus,
         onSaved: (value) {
@@ -196,7 +196,7 @@ class _AddBankDetailsScreenState extends State<AddBankDetailsScreen> {
               left: spacingSmall,
               right: spacingLarge,
               bottom: spacingXLarge),
-          child: OneTrustPrimaryButton(
+          child: PaymishPrimaryButton(
             buttonText: Localization.of(context).labelSubmit,
             isBackground: true,
             onButtonClick: _nextPressed,

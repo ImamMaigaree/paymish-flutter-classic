@@ -13,13 +13,13 @@ import '../utils/preference_key.dart';
 import '../utils/preference_utils.dart';
 import 'profile_image_view.dart';
 
-class OneTrustHomeAppbar extends StatelessWidget
+class PaymishHomeAppbar extends StatelessWidget
     implements PreferredSizeWidget {
   final bool titleVisible;
   final bool isBackGround;
   final ValueNotifier<bool> _isUpdate = ValueNotifier<bool>(false);
 
-  OneTrustHomeAppbar(
+  PaymishHomeAppbar(
       {super.key, this.titleVisible = false, this.isBackGround = false});
 
   @override

@@ -6,13 +6,13 @@ import '../utils/constants.dart';
 import '../utils/dimens.dart';
 
 @immutable
-class OneTrustPrimaryButton extends StatelessWidget {
+class PaymishPrimaryButton extends StatelessWidget {
   // to enable button with background or without background
   final bool isBackground;
   final String buttonText;
   final VoidCallback onButtonClick;
 
-  const OneTrustPrimaryButton({
+  const PaymishPrimaryButton({
     Key? key,
     required this.buttonText,
     required this.isBackground,

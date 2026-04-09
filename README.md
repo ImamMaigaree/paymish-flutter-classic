@@ -1,3 +1,3 @@
-# 1Trust
+# Paymish
 
-1Trust User, Agent and Merchant App
+Paymish User/Agent & Merchant Project

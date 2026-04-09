@@ -34,10 +34,7 @@ import '../../ui/profile/accountSettings/changePin/model/req_change_pin.dart';
 import '../../ui/profile/accountSettings/changePin/model/res_change_pin.dart';
 import '../../ui/profile/editprofile/model/req_edit_profile.dart';
 import '../../ui/profile/editprofile/model/res_edit_profile.dart';
-import '../../ui/profile/kyc/model/req_igree_kyc_exchange.dart';
-import '../../ui/profile/kyc/model/req_igree_kyc_start.dart';
-import '../../ui/profile/kyc/model/res_igree_kyc_exchange.dart';
-import '../../ui/profile/kyc/model/res_igree_kyc_start.dart';
+import '../../ui/profile/kyc/model/req_kyc_verification.dart';
 import '../../ui/profile/model/res_profile.dart';
 import '../../ui/profile/myTransaction/res_my_transaction_model.dart';
 import '../../ui/profile/supportTickets/model/res_support_ticket.dart';
@@ -75,7 +72,6 @@ import '../../ui/utilityServices/model/res_data_plan_list.dart';
 import '../../ui/utilityServices/model/res_verify_meter_number.dart';
 import '../../ui/utilityServices/model/res_verify_smart_card_number.dart';
 import '../../utils/dialog_utils.dart';
-import '../../utils/app_config.dart';
 import '../../utils/localization/localization.dart';
 import '../api_constants.dart';
 import '../api_service.dart';
@@ -316,29 +312,14 @@ class UserApiManager {
     }
   }
 
-  Future<ResIgreeKycStart> startIgreeKyc(
-      ReqIgreeKycStart request) async {
+  Future<ResBaseModel> setKYCVerification(
+      ReqKycVerification reqKycVerification) async {
     try {
-      final response = await ApiService().postWithBaseUrl(
-        kycBaseUrl,
-        ApiConstants.apiIgreeKycStart,
-        data: request.toJson(),
+      final response = await ApiService().post(
+        ApiConstants.apiKycVerification,
+        data: reqKycVerification.toJson(),
       );
-      return ResIgreeKycStart.fromJson(response.data);
-    } on DioException catch (error) {
-      throw ResBaseModel.fromJsonWithCode(error.response);
-    }
-  }
-
-  Future<ResIgreeKycExchange> completeIgreeKyc(
-      ReqIgreeKycExchange request) async {
-    try {
-      final response = await ApiService().postWithBaseUrl(
-        kycBaseUrl,
-        ApiConstants.apiIgreeKycExchange,
-        data: request.toJson(),
-      );
-      return ResIgreeKycExchange.fromJson(response.data);
+      return ResBaseModel.fromJson(response.data);
     } on DioException catch (error) {
       throw ResBaseModel.fromJsonWithCode(error.response);
     }

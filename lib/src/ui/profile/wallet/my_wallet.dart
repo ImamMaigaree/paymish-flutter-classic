@@ -18,8 +18,8 @@ import '../../../utils/navigation_params.dart';
 import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/one_trust_appbar.dart';
-import '../../../widgets/one_trust_menu_list_item.dart';
+import '../../../widgets/paymish_appbar.dart';
+import '../../../widgets/paymish_menu_list_item.dart';
 import 'model/res_wallet_overview.dart';
 
 class MyWalletScreen extends StatefulWidget {
@@ -77,7 +77,7 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: Localization.of(context).myWallet,
         isBackGround: false,
         isHideBackButton: widget.isFromBottomNavigation,
@@ -166,20 +166,20 @@ class _MyWalletScreenState extends State<MyWalletScreen> with RouteAware {
                 const SizedBox(height: spacingLarge),
               ],
               getString(PreferenceKey.role) != DicParams.roleMerchant
-                  ? OneTrustMenuListItem(
+                  ? PaymishMenuListItem(
                       titleText: Localization.of(context).labelAddMoney,
                       onClick: () {
                         labelMainTabAddMoneyClick();
                       },
                     )
                   : const SizedBox(),
-              OneTrustMenuListItem(
+              PaymishMenuListItem(
                 titleText: Localization.of(context).labelWithdrawMoneyToBank,
                 onClick: () {
                   labelWithdrawMoneyToBankClick();
                 },
               ),
-              OneTrustMenuListItem(
+              PaymishMenuListItem(
                 titleText: Localization.of(context).labelRequestStatement,
                 onClick: () {
                   labelRequestStatementClick();

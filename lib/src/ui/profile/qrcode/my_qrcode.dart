@@ -13,8 +13,8 @@ import '../../../utils/localization/localization.dart';
 import '../../../utils/permission_util.dart';
 import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
-import '../../../widgets/one_trust_appbar.dart';
-import '../../../widgets/one_trust_primary_button.dart';
+import '../../../widgets/paymish_appbar.dart';
+import '../../../widgets/paymish_primary_button.dart';
 
 class MyQrCodeScreen extends StatefulWidget {
   const MyQrCodeScreen({Key? key}) : super(key: key);
@@ -45,7 +45,7 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: Localization.of(context).myQrCodeLabel,
         isBackGround: false,
       ),
@@ -95,7 +95,7 @@ class _MyQrCodeScreenState extends State<MyQrCodeScreen> {
                 left: spacingXXXXXLarge + spacingXLarge,
                 right: spacingXXXXXLarge + spacingXLarge,
                 bottom: spacingLarge),
-            child: OneTrustPrimaryButton(
+            child: PaymishPrimaryButton(
               buttonText: Localization.of(context).labelDownload,
               isBackground: true,
               onButtonClick: saveAsImageWithPermission,

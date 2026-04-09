@@ -18,9 +18,9 @@ import '../../../utils/navigation.dart';
 import '../../../utils/navigation_params.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/one_trust_appbar.dart';
-import '../../../widgets/one_trust_primary_button.dart';
-import '../../../widgets/one_trust_text_field.dart';
+import '../../../widgets/paymish_appbar.dart';
+import '../../../widgets/paymish_primary_button.dart';
+import '../../../widgets/paymish_text_field.dart';
 import 'model/req_sign_up.dart';
 
 class MerchantSignUpScreen extends StatefulWidget {
@@ -97,7 +97,7 @@ class _MerchantSignUpScreenState extends State<MerchantSignUpScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              OneTrustAppBar(
+              PaymishAppBar(
                 title: Localization.of(context).createAccount,
                 isBackGround: true,
                 isHideBackButton: widget.isFromIntroduction,
@@ -153,7 +153,7 @@ class _MerchantSignUpScreenState extends State<MerchantSignUpScreen> {
       padding: const EdgeInsets.only(
           top: spacingSmall, left: spacingLarge, right: spacingLarge),
       margin: const EdgeInsets.only(top: spacingMedium),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         textInputAction: TextInputAction.next,
         focusNode: _emailFocus,
         onSaved: (value) {
@@ -210,7 +210,7 @@ class _MerchantSignUpScreenState extends State<MerchantSignUpScreen> {
       padding: const EdgeInsets.only(
           top: spacingSmall, left: spacingLarge, right: spacingLarge),
       margin: const EdgeInsets.only(top: spacingMedium),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         textInputAction: TextInputAction.next,
         focusNode: _mobileFocus,
         onSaved: (value) {
@@ -242,7 +242,7 @@ class _MerchantSignUpScreenState extends State<MerchantSignUpScreen> {
     return Container(
       padding: const EdgeInsets.only(
           top: 35, left: spacingLarge, right: spacingLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         textInputAction: TextInputAction.next,
         focusNode: _firstNameFocus,
         onSaved: (value) {
@@ -271,7 +271,7 @@ class _MerchantSignUpScreenState extends State<MerchantSignUpScreen> {
     return Container(
       padding: const EdgeInsets.only(
           top: 35, left: spacingLarge, right: spacingLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         textInputAction: TextInputAction.next,
         focusNode: _lastNameFocus,
         onSaved: (value) {
@@ -300,7 +300,7 @@ class _MerchantSignUpScreenState extends State<MerchantSignUpScreen> {
     return Container(
       padding: const EdgeInsets.only(
           top: spacingXXMLarge, left: spacingLarge, right: spacingLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         textInputAction: TextInputAction.next,
         focusNode: _businessNameFocus,
         onSaved: (value) {
@@ -373,7 +373,7 @@ class _MerchantSignUpScreenState extends State<MerchantSignUpScreen> {
   Widget _getNextButton() => Padding(
         padding: const EdgeInsets.only(
             top: spacingXXXXLarge, left: spacingLarge, right: spacingLarge),
-        child: OneTrustPrimaryButton(
+        child: PaymishPrimaryButton(
           buttonText: Localization.of(context).labelSubmit,
           isBackground: true,
           onButtonClick: _nextPressed,
@@ -386,7 +386,7 @@ class _MerchantSignUpScreenState extends State<MerchantSignUpScreen> {
             right: spacingLarge,
             bottom: spacingSmall,
             top: spacingXXLarge),
-        child: OneTrustTextField(
+        child: PaymishTextField(
           textInputAction: TextInputAction.done,
           focusNode: _passwordFocus,
         onSaved: (value) {

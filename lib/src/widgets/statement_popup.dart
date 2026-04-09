@@ -5,7 +5,7 @@ import '../utils/color_utils.dart';
 import '../utils/constants.dart';
 import '../utils/dimens.dart';
 import '../utils/localization/localization.dart';
-import 'one_trust_primary_button.dart';
+import 'paymish_primary_button.dart';
 
 class StatementPopup extends StatelessWidget {
   final String image;
@@ -106,7 +106,7 @@ class StatementPopup extends StatelessWidget {
   Widget _okButton(
       {required BuildContext context, required VoidCallback onClick}) {
     return Expanded(
-      child: OneTrustPrimaryButton(
+      child: PaymishPrimaryButton(
         buttonText: Localization.of(context).ok.toUpperCase(),
         isBackground: true,
         onButtonClick: onClick,

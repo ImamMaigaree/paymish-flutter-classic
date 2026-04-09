@@ -7,13 +7,13 @@ import '../utils/dimens.dart';
 import '../utils/image_constants.dart';
 
 @immutable
-class OneTrustMenuListItem extends StatelessWidget {
+class PaymishMenuListItem extends StatelessWidget {
   final bool isSubTitle;
   final String titleText;
   final String subTitleText;
   final VoidCallback onClick;
 
-  const OneTrustMenuListItem({
+  const PaymishMenuListItem({
     Key? key,
     required this.titleText,
     this.isSubTitle = false,

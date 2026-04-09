@@ -13,7 +13,7 @@ import '../../../utils/image_constants.dart';
 import '../../../utils/localization/localization.dart';
 import '../../../utils/navigation.dart';
 import '../../../utils/progress_dialog.dart';
-import '../../../widgets/one_trust_appbar.dart';
+import '../../../widgets/paymish_appbar.dart';
 import '../model/res_bank_details.dart';
 import '../provider/bank_details_provider.dart';
 
@@ -61,7 +61,7 @@ class _BankDetailsScreenState extends State<BankDetailsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: Localization.of(context).labelBankDetails,
         isBackGround: false,
       ),

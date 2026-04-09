@@ -16,12 +16,10 @@ import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/one_trust_appbar.dart';
-import '../../../widgets/one_trust_primary_button.dart';
-import '../../../widgets/one_trust_text_field.dart';
-import 'igree_consent_screen.dart';
-import 'model/req_igree_kyc_start.dart';
-import 'model/res_igree_kyc_exchange.dart';
+import '../../../widgets/paymish_appbar.dart';
+import '../../../widgets/paymish_primary_button.dart';
+import '../../../widgets/paymish_text_field.dart';
+import 'model/req_kyc_verification.dart';
 
 // ignore: must_be_immutable
 class CompleteKYCScreen extends StatelessWidget {
@@ -29,10 +27,10 @@ class CompleteKYCScreen extends StatelessWidget {
   final bool completeTransactionDetails;
 
   CompleteKYCScreen({
-    super.key,
+    Key? key,
     this.showBackButton = false,
     this.completeTransactionDetails = false,
-  });
+  }) : super(key: key);
 
   final TextEditingController _bvnNumberController = TextEditingController();
 
@@ -43,7 +41,7 @@ class CompleteKYCScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: showBackButton || completeTransactionDetails
-          ? OneTrustAppBar(
+          ? PaymishAppBar(
               title: Localization.of(context).completeKycLabel,
               isBackGround: false,
             )
@@ -96,7 +94,7 @@ class CompleteKYCScreen extends StatelessWidget {
                         right: spacingLarge,
                         bottom: spacingLarge,
                       ),
-                      child: OneTrustTextField(
+                      child: PaymishTextField(
                         controller: _bvnNumberController,
                         hint: Localization.of(context).bvnNumber,
                         label: Localization.of(context).bvnNumber,
@@ -133,7 +131,7 @@ class CompleteKYCScreen extends StatelessWidget {
                             right: spacingSmall,
                             bottom: spacingLarge,
                           ),
-                          child: OneTrustPrimaryButton(
+                          child: PaymishPrimaryButton(
                             buttonText: Localization.of(context).labelSkip,
                             isBackground: false,
                             onButtonClick: () => _skipPressed(context),
@@ -148,7 +146,7 @@ class CompleteKYCScreen extends StatelessWidget {
                       right: spacingLarge,
                       bottom: spacingLarge,
                     ),
-                    child: OneTrustPrimaryButton(
+                    child: PaymishPrimaryButton(
                       buttonText: Localization.of(context).verifyLabel,
                       isBackground: true,
                       onButtonClick: () {
@@ -184,9 +182,9 @@ class CompleteKYCScreen extends StatelessWidget {
           ),
           SizedBox(height: spacingTiny),
           _KycCheckRow(
-            icon: Icons.open_in_browser_rounded,
-            color: Color(0xff0f5d75),
-            text: 'NIBSS iGree consent opens next',
+            icon: Icons.check_circle_rounded,
+            color: Color(0xff1f7a32),
+            text: 'Consent captured',
           ),
           SizedBox(height: spacingTiny),
           _KycCheckRow(
@@ -199,102 +197,60 @@ class CompleteKYCScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _verifyPressed(BuildContext context) async {
+  void _verifyPressed(BuildContext context) {
     ProgressDialogUtils.showProgressDialog(context);
-    try {
-      final value = await UserApiManager().startIgreeKyc(
-        ReqIgreeKycStart(
-          userId: getInt(PreferenceKey.id),
-          bvnNumber: _bvnNumberController.text.trim(),
-        ),
-      );
-      ProgressDialogUtils.dismissProgressDialog();
-      if (!context.mounted) {
-        return;
-      }
-
-      final authorizationUrl = value.data?.authorizationUrl ?? '';
-      final sessionId = value.data?.sessionId ?? '';
-      if (authorizationUrl.isEmpty || sessionId.isEmpty) {
-        DialogUtils.showAlertDialog(
-          context,
-          value.message ?? 'Unable to start BVN consent.',
-        );
-        return;
-      }
-
-      final consentResult = await Navigator.of(context).push<IgreeKycExchangeData>(
-        MaterialPageRoute(
-          builder: (_) => IgreeConsentScreen(
-            authorizationUrl: authorizationUrl,
-            sessionId: sessionId,
-            bvnNumber: _bvnNumberController.text.trim(),
-          ),
-        ),
-      );
-
-      if (!context.mounted || consentResult == null) {
-        return;
-      }
-
-      await DialogUtils.displayToast('BVN verified successfully.');
-      await _updateSharedPref(consentResult);
-      if (!context.mounted) {
-        return;
-      }
-
-      if (completeTransactionDetails) {
-        if (getInt(PreferenceKey.isBankAccount) == 0) {
-          NavigationUtils.pushReplacement(
-            context,
-            routeWalletSetup,
-            arguments: {NavigationParams.showBackButton: true},
-          );
-        } else if (getInt(PreferenceKey.isTransactionPin) == 0) {
-          NavigationUtils.pushReplacement(
-            context,
-            routeTransactionPinSetup,
-            arguments: {NavigationParams.showBackButton: true},
-          );
-        } else {
-          NavigationUtils.pop(context);
-        }
-      } else if (showBackButton) {
-        NavigationUtils.pop(context);
-      } else {
-        final nextRoute = getString(PreferenceKey.role) == DicParams.roleMerchant
-            ? routeMerchantMainTab
-            : routeMainTab;
-        await NavigationUtils.pushAndRemoveUntil(context, nextRoute);
-      }
-    } catch (e) {
-      ProgressDialogUtils.dismissProgressDialog();
-      if (!context.mounted) {
-        return;
-      }
-
-      if (e is ResBaseModel) {
-        if (!checkSessionExpire(e, context)) {
-          debugPrint(e.error);
-          DialogUtils.showAlertDialog(context, e.error ?? '');
-        } else {
-          DialogUtils.showAlertDialog(context, e.message ?? '');
-        }
-      } else {
-        DialogUtils.showAlertDialog(context, e.toString());
-      }
-    }
+    UserApiManager()
+        .setKYCVerification(
+          ReqKycVerification(bvnNumber: _bvnNumberController.text.trim()),
+        )
+        .then((value) async {
+          ProgressDialogUtils.dismissProgressDialog();
+          await DialogUtils.displayToast(value.message ?? '');
+          await _updateSharedPref();
+          if (completeTransactionDetails) {
+            if (getInt(PreferenceKey.isBankAccount) == 0) {
+              NavigationUtils.pushReplacement(
+                context,
+                routeWalletSetup,
+                arguments: {NavigationParams.showBackButton: true},
+              );
+            } else if (getInt(PreferenceKey.isTransactionPin) == 0) {
+              NavigationUtils.pushReplacement(
+                context,
+                routeTransactionPinSetup,
+                arguments: {NavigationParams.showBackButton: true},
+              );
+            } else {
+              NavigationUtils.pop(context);
+            }
+          } else if (showBackButton) {
+            NavigationUtils.pop(context);
+          } else {
+            await NavigationUtils.pushAndRemoveUntil(
+              context,
+              routeWalletSetup,
+              arguments: {NavigationParams.showBackButton: false},
+            );
+          }
+        })
+        .catchError((dynamic e) {
+          ProgressDialogUtils.dismissProgressDialog();
+          if (e is ResBaseModel) {
+            if (!checkSessionExpire(e, context)) {
+              debugPrint(e.error);
+              DialogUtils.showAlertDialog(context, e.error ?? '');
+            } else {
+              DialogUtils.showAlertDialog(context, e.message ?? '');
+            }
+          } else {
+            DialogUtils.showAlertDialog(context, e.toString());
+          }
+        });
   }
 
-  Future _updateSharedPref(IgreeKycExchangeData result) async {
-    await setString(
-      PreferenceKey.kycStatus,
-      result.kycStatus ?? DicParams.verified,
-    );
-    await setString(
-      PreferenceKey.bvnNumber,
-      result.bvnNumber ?? _bvnNumberController.text.trim(),
-    );
+  Future _updateSharedPref() async {
+    await setString(PreferenceKey.kycStatus, DicParams.verified);
+    await setString(PreferenceKey.bvnNumber, _bvnNumberController.text.trim());
   }
 
   void _skipPressed(BuildContext context) {

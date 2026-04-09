@@ -1,7 +1,6 @@
 import 'package:flutter_paystack/flutter_paystack.dart';
 
 const _baseUrl = "baseUrl";
-const _kycBaseUrl = "kycBaseUrl";
 const _socketUrl = "socketUrl";
 const _payStackPublicKey = "_payStackPublicKey";
 
@@ -56,10 +55,6 @@ dynamic get apiBaseUrl {
   return _config[_baseUrl];
 }
 
-dynamic get kycBaseUrl {
-  return _config[_kycBaseUrl] ?? _config[_baseUrl];
-}
-
 dynamic get payStackKey {
   return _config[_payStackPublicKey];
 }
@@ -69,43 +64,37 @@ dynamic get socketUrl {
 }
 
 Map<String, dynamic> userDevConstants = {
-  _baseUrl: "http://10.0.2.2:4000/api/v1/",
-  _kycBaseUrl: "http://10.0.2.2:4000/",
+  _baseUrl: "http://10.0.2.2:5500/api/v1/",
   _socketUrl: "http://10.0.2.2:3003/",
   _payStackPublicKey: "pk_live_1b15f5dbb3477f2418f4fb06672d48410e5b2f79"
 };
 
 Map<String, dynamic> merchantDevConstants = {
-  _baseUrl: "http://10.0.2.2:4000/api/v1/",
-  _kycBaseUrl: "http://10.0.2.2:4000/",
+  _baseUrl: "http://10.0.2.2:5500/api/v1/",
   _socketUrl: "http://10.0.2.2:3003/",
   _payStackPublicKey: "pk_live_1b15f5dbb3477f2418f4fb06672d48410e5b2f79"
 };
 
 Map<String, dynamic> userStageConstants = {
-  _baseUrl: "https://api.stage.1trust.example/v1/",
-  _kycBaseUrl: "https://api.stage.1trust.example/",
-  _socketUrl: "https://chat.stage.1trust.example/",
+  _baseUrl: "https://api.stage.paymish.com/v1/",
+  _socketUrl: "https://chat.stage.paymish.com/",
   _payStackPublicKey: "pk_test_102da9c4996e1cbe80a1964b92a5974760ae4cfe"
 };
 
 Map<String, dynamic> merchantStageConstants = {
-  _baseUrl: "https://api.stage.1trust.example/v1/",
-  _kycBaseUrl: "https://api.stage.1trust.example/",
-  _socketUrl: "https://chat.stage.1trust.example/",
+  _baseUrl: "https://api.stage.paymish.com/v1/",
+  _socketUrl: "https://chat.stage.paymish.com/",
   _payStackPublicKey: "pk_test_102da9c4996e1cbe80a1964b92a5974760ae4cfe"
 };
 
 Map<String, dynamic> userProdConstants = {
-  _baseUrl: "https://api.1trust.example/v1/",
-  _kycBaseUrl: "https://api.1trust.example/",
-  _socketUrl: "https://chat.1trust.example/",
+  _baseUrl: "https://api.paymish.com/v1/",
+  _socketUrl: "https://chat.paymish.com/",
   _payStackPublicKey: "pk_test_102da9c4996e1cbe80a1964b92a5974760ae4cfe"
 };
 
 Map<String, dynamic> merchantProdConstants = {
-  _baseUrl: "https://api.1trust.example/v1/",
-  _kycBaseUrl: "https://api.1trust.example/",
-  _socketUrl: "https://chat.1trust.example/",
+  _baseUrl: "https://api.paymish.com/v1/",
+  _socketUrl: "https://chat.paymish.com/",
   _payStackPublicKey: "pk_live_e043b6f859fd56872692386ba935f7509f1cd748"
 };

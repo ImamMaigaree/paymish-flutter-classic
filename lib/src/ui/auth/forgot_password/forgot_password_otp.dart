@@ -12,8 +12,8 @@ import '../../../utils/navigation.dart';
 import '../../../utils/navigation_params.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../widgets/otp_countdown.dart';
-import '../../../widgets/one_trust_appbar.dart';
-import '../../../widgets/one_trust_primary_button.dart';
+import '../../../widgets/paymish_appbar.dart';
+import '../../../widgets/paymish_primary_button.dart';
 import '../../../widgets/pin_input_text_field.dart';
 import '../signup/verify_otp/model/req_resend_otp.dart';
 import '../signup/verify_otp/model/req_verify_otp.dart';
@@ -72,7 +72,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen>
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white,
-        appBar: OneTrustAppBar(
+        appBar: PaymishAppBar(
           title: Localization.of(context).forgotPasswordLabel,
           isBackGround: false,
         ),
@@ -108,7 +108,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen>
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingLarge),
-      child: OneTrustPrimaryButton(
+      child: PaymishPrimaryButton(
         buttonText: Localization.of(context).labelSubmit,
         isBackground: true,
         onButtonClick: () => _submitPressed(context),

@@ -1,14 +1,12 @@
 import '../../../../apis/dic_params.dart';
 
-class ReqIgreeKycStart {
-  int? userId;
+class ReqKycVerification {
   String? bvnNumber;
 
-  ReqIgreeKycStart({this.userId, this.bvnNumber});
+  ReqKycVerification({this.bvnNumber});
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
-    data[DicParams.userId] = userId;
     data[DicParams.bvnNumber] = bvnNumber;
     return data;
   }

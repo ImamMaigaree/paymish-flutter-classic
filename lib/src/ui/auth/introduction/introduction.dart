@@ -20,7 +20,7 @@ import '../../../utils/navigation_params.dart';
 import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/progress_dialog.dart';
-import '../../../widgets/one_trust_primary_button.dart';
+import '../../../widgets/paymish_primary_button.dart';
 import '../login/model/req_login.dart';
 import '../login/model/res_login.dart';
 import '../signup/verify_otp/model/req_resend_otp.dart';
@@ -150,7 +150,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         child: Padding(
           padding: const EdgeInsets.only(
               left: spacingLarge, right: spacingSmall, top: spacingSmall),
-          child: OneTrustPrimaryButton(
+          child: PaymishPrimaryButton(
             buttonText: Localization.of(context).signInTitle,
             isBackground: false,
             onButtonClick: _signInButtonPressed,
@@ -167,7 +167,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
         child: Padding(
           padding: const EdgeInsets.only(
               left: spacingSmall, right: spacingLarge, top: spacingSmall),
-          child: OneTrustPrimaryButton(
+          child: PaymishPrimaryButton(
             buttonText: Localization.of(context).signUpTitle,
             isBackground: false,
             onButtonClick: _signUpButtonPressed,

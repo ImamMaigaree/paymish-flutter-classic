@@ -10,14 +10,14 @@ import '../utils/navigation.dart';
 import '../utils/preference_key.dart';
 import '../utils/preference_utils.dart';
 
-class OneTrustAppBar extends StatelessWidget implements PreferredSizeWidget {
+class PaymishAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool isBackGround;
   final bool isHideBackButton;
   final bool isFromAuth;
   final bool isCloseIcon;
 
-  const OneTrustAppBar(
+  const PaymishAppBar(
       {super.key,
       required this.title,
       required this.isBackGround,

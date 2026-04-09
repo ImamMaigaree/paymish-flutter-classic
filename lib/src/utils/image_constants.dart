@@ -65,7 +65,7 @@ class ImageConstants {
   static const String icNigeriaCurrencySymbol = 'assets/images/ic_nigeria_currency_symbol.png';
   static const String icSendMessage = 'assets/images/ic_send_message.png';
   static const String icDelete = 'assets/images/ic_delete.png';
-  static const String icOneTrustWhite = 'assets/images/ic_one_trust_white.png';
+  static const String icPaymishWhite = 'assets/images/ic_paymish_white.png';
   static const String icChatMessage = 'assets/images/ic_chat_message.png';
   static const String icCommissionEarned = 'assets/images/ic_commission_earned.png';
   static const String icSuccess = 'assets/images/ic_success.png';

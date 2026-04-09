@@ -7,7 +7,7 @@ import '../utils/dimens.dart';
 import '../utils/image_constants.dart';
 
 @immutable
-class OneTrustSupportTicket extends StatelessWidget {
+class PaymishSupportTicket extends StatelessWidget {
   final String titleText;
   final String categoryText;
   final String statusText;
@@ -15,7 +15,7 @@ class OneTrustSupportTicket extends StatelessWidget {
   final String date;
   final GestureTapCallback? onClick;
 
-  const OneTrustSupportTicket({
+  const PaymishSupportTicket({
     super.key,
     required this.titleText,
     required this.categoryText,

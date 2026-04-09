@@ -13,9 +13,9 @@ import '../../../../utils/preference_key.dart';
 import '../../../../utils/preference_utils.dart';
 import '../../../../utils/progress_dialog.dart';
 import '../../../../utils/utils.dart';
-import '../../../../widgets/one_trust_appbar.dart';
-import '../../../../widgets/one_trust_primary_button.dart';
-import '../../../../widgets/one_trust_text_field.dart';
+import '../../../../widgets/paymish_appbar.dart';
+import '../../../../widgets/paymish_primary_button.dart';
+import '../../../../widgets/paymish_text_field.dart';
 import 'model/req_change_password.dart';
 
 // ignore: must_be_immutable
@@ -35,7 +35,7 @@ class ChangePasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: Localization.of(context).changePasswordLabel,
         isBackGround: false,
         isFromAuth: false,
@@ -67,7 +67,7 @@ class ChangePasswordScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingLarge),
-      child: OneTrustPrimaryButton(
+      child: PaymishPrimaryButton(
         buttonText: Localization.of(context).labelSave,
         isBackground: true,
         onButtonClick: () => _savePressed(context),
@@ -78,7 +78,7 @@ class ChangePasswordScreen extends StatelessWidget {
   Widget confirmNewPasswordFieldWidget(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: spacingXLarge, right: spacingXLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         controller: _confirmNewPasswordController,
         hint: Localization.of(context).confirmNewPasswordLabel,
         label: Localization.of(context).confirmNewPasswordLabel,
@@ -104,7 +104,7 @@ class ChangePasswordScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingXLarge, right: spacingXLarge, bottom: spacingXLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         controller: _oldPasswordController,
         hint: Localization.of(context).oldPasswordLabel,
         label: Localization.of(context).oldPasswordLabel,
@@ -128,7 +128,7 @@ class ChangePasswordScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingXLarge, right: spacingXLarge, bottom: spacingXLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         controller: _newPasswordController,
         hint: Localization.of(context).newPasswordLabel,
         label: Localization.of(context).newPasswordLabel,

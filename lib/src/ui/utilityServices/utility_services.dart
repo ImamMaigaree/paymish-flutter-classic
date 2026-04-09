@@ -25,10 +25,10 @@ import '../../utils/preference_key.dart';
 import '../../utils/preference_utils.dart';
 import '../../utils/progress_dialog.dart';
 import '../../utils/utils.dart';
-import '../../widgets/one_trust_appbar.dart';
-import '../../widgets/one_trust_menu_list_item.dart';
-import '../../widgets/one_trust_primary_button.dart';
-import '../../widgets/one_trust_text_field.dart';
+import '../../widgets/paymish_appbar.dart';
+import '../../widgets/paymish_menu_list_item.dart';
+import '../../widgets/paymish_primary_button.dart';
+import '../../widgets/paymish_text_field.dart';
 import '../auth/home/model/res_home.dart';
 import '../chat/provider/chat_payment_selection_provider.dart';
 import '../paymentSetting/model/res_card_listing.dart';
@@ -97,7 +97,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
     final identifier = widget.services.identifier ?? '';
     return Scaffold(
         backgroundColor: Colors.white,
-        appBar: OneTrustAppBar(
+        appBar: PaymishAppBar(
           title: toBeginningOfSentenceCase(identifier) ?? '',
           isBackGround: false,
         ),
@@ -156,7 +156,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
                           widget.services.identifier == DicParams.data ||
                                   widget.services.identifier ==
                                       DicParams.tvSubscription
-                              ? OneTrustMenuListItem(
+                              ? PaymishMenuListItem(
                                   titleText:
                                       myModel.selectedDataPlan.vairationName ??
                                           '',
@@ -285,7 +285,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
       child: Padding(
         padding: const EdgeInsets.only(
             left: spacingSmall, right: spacingLarge, bottom: spacingLarge),
-        child: OneTrustPrimaryButton(
+        child: PaymishPrimaryButton(
           buttonText: Localization.of(context).labelContinue,
           isBackground: true,
           onButtonClick: () {
@@ -313,7 +313,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
       child: Padding(
         padding: const EdgeInsets.only(
             left: spacingLarge, right: spacingSmall, bottom: spacingLarge),
-        child: OneTrustPrimaryButton(
+        child: PaymishPrimaryButton(
           buttonText: Localization.of(context).cancel,
           isBackground: false,
           onButtonClick: () {
@@ -326,7 +326,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
 
   Widget _getAmountTextField(BuildContext context, String amount) {
     _syncAmountController(amount);
-    return OneTrustTextField(
+    return PaymishTextField(
       controller: _amountController,
       focusNode: _amountFocus,
       hint: Localization.of(context).hintEnterAmount,
@@ -379,7 +379,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
 
   Widget _getCustomerNameTextField(BuildContext context, String customerName) {
     _customerNameController = TextEditingController(text: customerName);
-    return OneTrustTextField(
+    return PaymishTextField(
       controller: _customerNameController,
       label: Localization.of(context).labelCustomerName,
       hint: Localization.of(context).labelCustomerName,
@@ -388,7 +388,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
   }
 
   Widget _getPhoneNumberTextField(BuildContext context) {
-    return OneTrustTextField(
+    return PaymishTextField(
       controller: _phoneNumberController,
       hint: Localization.of(context).phoneNumber,
       label: Localization.of(context).phoneNumber,
@@ -407,7 +407,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
   }
 
   Widget _getSmartCardNumberTextField(BuildContext context) {
-    return OneTrustTextField(
+    return PaymishTextField(
       controller: _smartCardNumberController,
       hint: Localization.of(context).labelSmartCardNumber,
       label: Localization.of(context).labelSmartCardNumber,
@@ -423,7 +423,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
   }
 
   Widget _getMeterNumberTextField(BuildContext context) {
-    return OneTrustTextField(
+    return PaymishTextField(
       controller: _meterNumberController,
       hint: Localization.of(context).labelMeterNumber,
       label: Localization.of(context).labelMeterNumber,
@@ -485,12 +485,12 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
                 imageUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Image.asset(
-                  ImageConstants.icOneTrustWhite,
+                  ImageConstants.icPaymishWhite,
                   fit: BoxFit.cover,
                 ),
               )
             : Image.asset(
-                ImageConstants.icOneTrustWhite,
+                ImageConstants.icPaymishWhite,
                 fit: BoxFit.cover,
               ),
       ),
@@ -761,7 +761,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
           spacingMedium, spacing45, spacingMedium, spacingLarge),
-      child: OneTrustPrimaryButton(
+      child: PaymishPrimaryButton(
         buttonText: Localization.of(context).labelProceed,
         isBackground: true,
         onButtonClick: () {
@@ -956,7 +956,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             Text(
-              Localization.of(context).labelOneTrustWallet,
+              Localization.of(context).labelPaymishWallet,
               style: const TextStyle(
                   fontFamily: fontFamilyPoppinsRegular,
                   fontSize: fontMedium,
@@ -1128,7 +1128,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
         padding: const EdgeInsets.only(
           left: spacingSmall,
         ),
-        child: OneTrustPrimaryButton(
+        child: PaymishPrimaryButton(
             buttonText: Localization.of(context).labelSelect,
             isBackground: true,
             onButtonClick: () async {
@@ -1147,7 +1147,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
         padding: const EdgeInsets.only(
           right: spacingSmall,
         ),
-        child: OneTrustPrimaryButton(
+        child: PaymishPrimaryButton(
             buttonText: Localization.of(context).cancel,
             isBackground: false,
             onButtonClick: () async {
@@ -1183,7 +1183,7 @@ class _UtilityServicesScreenState extends State<UtilityServicesScreen> {
     } else {
       platform = 'AN';
     }
-    return """ONETRUST_${platform}_${userId}_${DateTime.now().millisecondsSinceEpoch}""";
+    return """PAYMISH_${platform}_${userId}_${DateTime.now().millisecondsSinceEpoch}""";
   }
 
   void _addBank(String authID) {

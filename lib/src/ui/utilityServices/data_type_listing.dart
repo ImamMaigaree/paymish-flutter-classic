@@ -12,7 +12,7 @@ import '../../utils/dialog_utils.dart';
 import '../../utils/dimens.dart';
 import '../../utils/localization/localization.dart';
 import '../../utils/navigation.dart';
-import '../../widgets/one_trust_appbar.dart';
+import '../../widgets/paymish_appbar.dart';
 import '../auth/home/model/res_home.dart';
 import 'model/res_data_plan_list.dart';
 import 'provider/utility_service_provider.dart';
@@ -70,7 +70,7 @@ class _DataTypeListingScreenState extends State<DataTypeListingScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: Localization.of(context).labelDataType,
         isBackGround: false,
       ),

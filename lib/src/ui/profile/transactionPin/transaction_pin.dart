@@ -21,8 +21,8 @@ import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/one_trust_appbar.dart';
-import '../../../widgets/one_trust_primary_button.dart';
+import '../../../widgets/paymish_appbar.dart';
+import '../../../widgets/paymish_primary_button.dart';
 import '../../../widgets/pin_input_text_field.dart';
 import '../../chat/model/req_approve_request.dart';
 import '../../chat/model/req_pay_money.dart';
@@ -123,7 +123,7 @@ class _TransactionPinScreenState extends State<TransactionPinScreen> {
     _transactionPin = "";
     _pinEditingController.clear();
     return Scaffold(
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: Localization.of(context).labelEnterTransactionPin,
         isBackGround: false,
         isFromAuth: false,
@@ -168,7 +168,7 @@ class _TransactionPinScreenState extends State<TransactionPinScreen> {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingLarge),
-      child: OneTrustPrimaryButton(
+      child: PaymishPrimaryButton(
         buttonText: Localization.of(context).labelProceed,
         isBackground: true,
         onButtonClick: () {

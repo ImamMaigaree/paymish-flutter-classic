@@ -28,8 +28,8 @@ import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/one_trust_primary_button.dart';
-import '../../../widgets/one_trust_text_field.dart';
+import '../../../widgets/paymish_primary_button.dart';
+import '../../../widgets/paymish_text_field.dart';
 import '../signup/verify_otp/model/req_resend_otp.dart';
 import 'model/req_add_device.dart';
 import 'model/req_login.dart';
@@ -173,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _getPhoneNumberTextField() => Container(
     padding: const EdgeInsets.symmetric(horizontal: spacingLarge),
-    child: OneTrustTextField(
+    child: PaymishTextField(
       textInputAction: TextInputAction.next,
       focusNode: _phoneFocus,
       controller: _phoneNumberController,
@@ -201,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
       right: spacingLarge,
       top: spacingXXLarge,
     ),
-    child: OneTrustTextField(
+    child: PaymishTextField(
       textInputAction: TextInputAction.done,
       focusNode: _passwordFocus,
       controller: _passwordController,
@@ -298,7 +298,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _getLoginButton() => Padding(
     padding: const EdgeInsets.only(left: spacingLarge, right: spacingLarge),
-    child: OneTrustPrimaryButton(
+    child: PaymishPrimaryButton(
       buttonText: Localization.of(context).signInTitle,
       isBackground: true,
       onButtonClick: () async {

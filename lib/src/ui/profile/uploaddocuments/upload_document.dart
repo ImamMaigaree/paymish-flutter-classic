@@ -24,8 +24,8 @@ import '../../../utils/permission_util.dart';
 import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/progress_dialog.dart';
-import '../../../widgets/one_trust_appbar.dart';
-import '../../../widgets/one_trust_primary_button.dart';
+import '../../../widgets/paymish_appbar.dart';
+import '../../../widgets/paymish_primary_button.dart';
 import 'model/req_upload_documents.dart';
 import 'model/res_my_documents.dart';
 
@@ -94,7 +94,7 @@ class _UploadDocumentScreenState extends State<UploadDocumentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: !widget.isFromUpload
             ? Localization.of(context).myDocumentHeader
             : Localization.of(context).uploadDocumentHeader,
@@ -340,7 +340,7 @@ class _UploadDocumentScreenState extends State<UploadDocumentScreen> {
   Widget _getSubmitButton({required BuildContext context}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
-      child: OneTrustPrimaryButton(
+      child: PaymishPrimaryButton(
         buttonText: Localization.of(context).save,
         isBackground: true,
         onButtonClick: () {

@@ -16,7 +16,7 @@ import '../../../utils/navigation_params.dart';
 import '../../../utils/notification_constants.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/one_trust_appbar.dart';
+import '../../../widgets/paymish_appbar.dart';
 import 'model/res_notification.dart';
 import 'provider/home_screen_provider.dart';
 
@@ -54,7 +54,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         isBackGround: false,
         title: Localization.of(context).labelNotification,
       ),

@@ -18,7 +18,7 @@ import '../../../utils/localization/localization.dart';
 import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/progress_dialog.dart';
-import '../../../widgets/one_trust_appbar.dart';
+import '../../../widgets/paymish_appbar.dart';
 import '../model/res_card_listing.dart';
 import '../provider/bank_details_provider.dart';
 
@@ -67,7 +67,7 @@ class _CardDetailsScreenState extends State<CardDetailsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: Localization.of(context).cardDetails,
         isBackGround: false,
       ),
@@ -317,7 +317,7 @@ class _CardDetailsScreenState extends State<CardDetailsScreen>
     } else {
       platform = 'AN';
     }
-    return """ONETRUST_${platform}_${userId}_${DateTime.now().millisecondsSinceEpoch}""";
+    return """PAYMISH_${platform}_${userId}_${DateTime.now().millisecondsSinceEpoch}""";
   }
 
   void chargeCard() async {

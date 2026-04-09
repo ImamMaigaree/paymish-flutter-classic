@@ -15,27 +15,11 @@ class ResBaseModel {
   }
 
   ResBaseModel.fromJsonWithCode(response) {
-    if (response == null) {
-      error = 'Unable to reach 1Trust services. Please try again.';
-      code = 0;
-      message = error;
-      return;
-    }
-
-    final responseData = response.data;
-    final dataMap = responseData is Map<String, dynamic>
-        ? responseData
-        : <String, dynamic>{};
-
-    error =
-        dataMap[DicParams.error]?.toString() ??
-        dataMap[DicParams.message]?.toString() ??
-        response.statusMessage?.toString() ??
-        'Request failed';
+    error = response.data[DicParams.error]?.toString();
     code = response.statusCode;
-    message = dataMap[DicParams.message]?.toString() ?? error;
-    errorLogin = dataMap[DicParams.data] is Map<String, dynamic>
-        ? ErrorLogin.fromJson(dataMap[DicParams.data] as Map<String, dynamic>)
+    message = response.data[DicParams.message]?.toString();
+    errorLogin = response.data[DicParams.data] != null
+        ? ErrorLogin.fromJson(response.data[DicParams.data])
         : null;
   }
 

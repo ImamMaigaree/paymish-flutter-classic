@@ -6,7 +6,7 @@ import '../../../../utils/constants.dart';
 import '../../../../utils/dimens.dart';
 import '../../../../utils/localization/localization.dart';
 import '../../../../widgets/header_with_amount.dart';
-import '../../../../widgets/one_trust_appbar.dart';
+import '../../../../widgets/paymish_appbar.dart';
 import '../../../paymentMethodSelection/payment_method_selection.dart';
 
 // ignore: must_be_immutable
@@ -21,7 +21,7 @@ class AddMoneyToWalletSelectPaymentMethodScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: isWithdrawMoney
             ? Localization.of(context).labelWithdrawMoneyToBank
             : Localization.of(context).labelAddMoneyToWallet,

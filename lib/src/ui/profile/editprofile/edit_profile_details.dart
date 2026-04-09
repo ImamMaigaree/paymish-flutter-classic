@@ -16,9 +16,9 @@ import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/one_trust_appbar.dart';
-import '../../../widgets/one_trust_primary_button.dart';
-import '../../../widgets/one_trust_text_field.dart';
+import '../../../widgets/paymish_appbar.dart';
+import '../../../widgets/paymish_primary_button.dart';
+import '../../../widgets/paymish_text_field.dart';
 import 'model/req_edit_profile.dart';
 
 // ignore: must_be_immutable
@@ -49,7 +49,7 @@ class EditProfileDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: Localization.of(context).editDetailsLabel,
         isBackGround: false,
       ),
@@ -83,7 +83,7 @@ class EditProfileDetailsScreen extends StatelessWidget {
                   left: spacingLarge,
                   right: spacingLarge,
                   bottom: spacingLarge),
-              child: OneTrustPrimaryButton(
+              child: PaymishPrimaryButton(
                 buttonText: Localization.of(context).labelSave,
                 isBackground: true,
                 onButtonClick: () => _savePressed(context),
@@ -99,7 +99,7 @@ class EditProfileDetailsScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingXLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         controller: _descriptionController,
         hint: Localization.of(context).descriptionAboutBusiness,
         label: Localization.of(context).descriptionAboutBusiness,
@@ -121,7 +121,7 @@ class EditProfileDetailsScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingXLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         controller: _businessNameController,
         hint: Localization.of(context).businessName,
         label: Localization.of(context).businessName,
@@ -144,7 +144,7 @@ class EditProfileDetailsScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingXLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         maxLength: 10,
         isPrefixCountryCode: true,
         isLeadingIcon: true,
@@ -177,7 +177,7 @@ class EditProfileDetailsScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingXLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         controller: _emailIdController,
         hint: Localization.of(context).emailId,
         label: Localization.of(context).emailId,
@@ -199,7 +199,7 @@ class EditProfileDetailsScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingXLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         controller: _lastNameController,
         hint: Localization.of(context).lastName,
         label: Localization.of(context).lastName,
@@ -226,7 +226,7 @@ class EditProfileDetailsScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingXLarge),
-      child: OneTrustTextField(
+      child: PaymishTextField(
         controller: _firstNameController,
         hint: Localization.of(context).firstName,
         label: Localization.of(context).firstName,

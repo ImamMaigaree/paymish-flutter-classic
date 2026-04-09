@@ -20,7 +20,7 @@ import '../../utils/permission_util.dart';
 import '../../utils/preference_key.dart';
 import '../../utils/preference_utils.dart';
 import '../../utils/utils.dart';
-import '../../widgets/one_trust_appbar.dart';
+import '../../widgets/paymish_appbar.dart';
 import '../../widgets/profile_image_view.dart';
 import '../transfermoney/provider/pay_request_provider.dart';
 import 'model/req_contact.dart';
@@ -75,7 +75,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: Localization.of(context).requestMoneyHeader,
         isBackGround: false,
         isHideBackButton: true,

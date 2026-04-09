@@ -6,7 +6,7 @@ import '../../utils/dimens.dart';
 import '../../utils/image_constants.dart';
 import '../../utils/localization/localization.dart';
 import '../../utils/navigation.dart';
-import '../../widgets/one_trust_appbar.dart';
+import '../../widgets/paymish_appbar.dart';
 
 class PaymentSettingScreen extends StatefulWidget {
   const PaymentSettingScreen({Key? key}) : super(key: key);
@@ -30,7 +30,7 @@ class _PaymentSettingScreenState extends State<PaymentSettingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: Localization.of(context).paymentSettings,
         isBackGround: false,
       ),

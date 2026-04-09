@@ -8,7 +8,7 @@ import '../../../utils/dialog_utils.dart';
 import '../../../utils/dimens.dart';
 import '../../../utils/localization/localization.dart';
 import '../../../utils/progress_dialog.dart';
-import '../../../widgets/one_trust_appbar.dart';
+import '../../../widgets/paymish_appbar.dart';
 
 class PrivacyPolicyScreen extends StatefulWidget {
   final bool isPrivacyPolicy;
@@ -60,7 +60,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: OneTrustAppBar(
+      appBar: PaymishAppBar(
         title: widget.isPrivacyPolicy
             ? Localization.of(context).privacyPolicy
             : Localization.of(context).termsAndCondition,
