@@ -1,5 +1,5 @@
 #include "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
 
-name_suffix = PaymishMerchant
+name_suffix = 1TrustMerchant
 bundle_suffix = .merchant

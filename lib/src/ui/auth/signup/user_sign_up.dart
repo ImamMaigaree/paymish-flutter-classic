@@ -17,16 +17,16 @@ import '../../../utils/navigation.dart';
 import '../../../utils/navigation_params.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/paymish_appbar.dart';
-import '../../../widgets/paymish_primary_button.dart';
-import '../../../widgets/paymish_text_field.dart';
+import '../../../widgets/one_trust_appbar.dart';
+import '../../../widgets/one_trust_primary_button.dart';
+import '../../../widgets/one_trust_text_field.dart';
 import 'model/req_sign_up.dart';
 
 class UserSignUpScreen extends StatefulWidget {
   final bool isFromIntroduction;
 
   const UserSignUpScreen({Key? key, this.isFromIntroduction = false})
-      : super(key: key);
+    : super(key: key);
 
   @override
   _UserSignUpScreenState createState() => _UserSignUpScreenState();
@@ -35,14 +35,14 @@ class UserSignUpScreen extends StatefulWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(
-        DiagnosticsProperty<bool>('isFromIntroduction', isFromIntroduction));
+      DiagnosticsProperty<bool>('isFromIntroduction', isFromIntroduction),
+    );
   }
 }
 
 class _UserSignUpScreenState extends State<UserSignUpScreen> {
   final FocusNode _firstNameFocus = FocusNode();
   final FocusNode _lastNameFocus = FocusNode();
-  final FocusNode _dateOfBirthFocus = FocusNode();
   final FocusNode _residentialAddressFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _mobileFocus = FocusNode();
@@ -61,7 +61,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   String? _categoryOfBusinessDropDown;
   final __categoryOfBusinessDropDowns = [
     DicParams.categoryTypeIndividual,
-    DicParams.categoryTypeCorporate
+    DicParams.categoryTypeCorporate,
   ];
 
   bool _isActiveTypeUser = true;
@@ -91,7 +91,6 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   void dispose() {
     _firstNameFocus.dispose();
     _lastNameFocus.dispose();
-    _dateOfBirthFocus.dispose();
     _residentialAddressFocus.dispose();
     _emailFocus.dispose();
     _mobileFocus.dispose();
@@ -112,7 +111,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PaymishAppBar(
+      appBar: OneTrustAppBar(
         title: Localization.of(context).createAccount,
         isBackGround: false,
         isHideBackButton: widget.isFromIntroduction,
@@ -146,9 +145,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
               _getNextButton(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  _getAccountRegister(),
-                ],
+                children: <Widget>[_getAccountRegister()],
               ),
             ],
           ),
@@ -158,42 +155,31 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   }
 
   Widget _getScreenTitle() => Padding(
-        padding: const EdgeInsets.only(top: spacingSmall, left: spacingLarge),
-        child: Text(
-          Localization.of(context).createAccountLabelUser,
-          style: const TextStyle(
-            color: ColorUtils.blackColorLight,
-            fontSize: fontLarge,
-          ),
-        ),
-      );
+    padding: const EdgeInsets.only(top: spacingSmall, left: spacingLarge),
+    child: Text(
+      Localization.of(context).createAccountLabelUser,
+      style: const TextStyle(
+        color: ColorUtils.blackColorLight,
+        fontSize: fontLarge,
+      ),
+    ),
+  );
 
   Widget _getDateOfBirthTextField() {
     return Container(
       padding: const EdgeInsets.only(
-          top: spacingSmall, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
-        textInputAction: TextInputAction.next,
-        focusNode: _dateOfBirthFocus,
-        onSaved: (value) {
-          _dateOfBirth = (value ?? '').trim();
-        },
-        onFieldSubmitted: (_) {
-          _dateOfBirthFocus.unfocus();
-          FocusScope.of(context).requestFocus(_residentialAddressFocus);
-        },
-        type: TextInputType.datetime,
-        hint: "Date of Birth (YYYY-MM-DD)",
-        label: "Date of Birth (YYYY-MM-DD)",
-        validateFunction: (value) {
-          final input = (value ?? '').trim();
+        top: spacingSmall,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
+      child: FormField<String>(
+        initialValue: _dateOfBirth,
+        validator: (value) {
+          final input = (value ?? _dateOfBirth ?? '').trim();
           if (input.isEmpty) {
             return "Date of birth is required";
           }
-          if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(input)) {
-            return "Use YYYY-MM-DD format";
-          }
-          final parsed = DateTime.tryParse(input);
+          final parsed = _parseDisplayDate(input);
           if (parsed == null) {
             return "Enter a valid date";
           }
@@ -202,14 +188,153 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
           }
           return null;
         },
+        builder: (field) {
+          final hasValue = (field.value ?? '').trim().isNotEmpty;
+
+          return InkWell(
+            onTap: () async {
+              final selectedDate = await _pickDateOfBirth();
+              if (!mounted || selectedDate == null) {
+                return;
+              }
+
+              setState(() {
+                _dateOfBirth = selectedDate;
+              });
+              field.didChange(selectedDate);
+            },
+            child: InputDecorator(
+              isEmpty: !hasValue,
+              decoration: InputDecoration(
+                labelText: "Date of Birth (DD-MM-YYYY)",
+                contentPadding: const EdgeInsets.only(top: 0),
+                counter: const Offstage(),
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+                errorStyle: const TextStyle(color: Colors.red),
+                errorText: field.errorText,
+                errorBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.red),
+                ),
+                errorMaxLines: 3,
+                hintStyle: const TextStyle(
+                  fontSize: fontLarge,
+                  color: ColorUtils.accentColor,
+                  fontWeight: FontWeight.w500,
+                ),
+                labelStyle: const TextStyle(
+                  fontSize: fontLarge,
+                  color: ColorUtils.primaryColor,
+                  fontWeight: FontWeight.w500,
+                  inherit: true,
+                ),
+                enabledBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: ColorUtils.accentColor,
+                    width: 1,
+                  ),
+                ),
+                suffixIcon: Padding(
+                  padding: const EdgeInsets.all(spacingSmall),
+                  child: Image.asset(
+                    ImageConstants.icCalender,
+                    width: imageMTiny,
+                    height: imageMTiny,
+                    scale: 2,
+                  ),
+                ),
+              ),
+              child: Text(
+                hasValue ? field.value! : '',
+                style: const TextStyle(
+                  color: ColorUtils.primaryColor,
+                  fontSize: fontLarge,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
+  }
+
+  DateTime? _parseDisplayDate(String input) {
+    final match = RegExp(r'^(\d{2})-(\d{2})-(\d{4})$').firstMatch(input.trim());
+    if (match == null) {
+      return null;
+    }
+
+    final day = int.tryParse(match.group(1) ?? '');
+    final month = int.tryParse(match.group(2) ?? '');
+    final year = int.tryParse(match.group(3) ?? '');
+    if (day == null || month == null || year == null) {
+      return null;
+    }
+
+    final parsed = DateTime(year, month, day);
+    if (parsed.year != year || parsed.month != month || parsed.day != day) {
+      return null;
+    }
+
+    return parsed;
+  }
+
+  String _formatDisplayDate(DateTime value) {
+    final day = value.day.toString().padLeft(2, '0');
+    final month = value.month.toString().padLeft(2, '0');
+    final year = value.year.toString();
+    return '$day-$month-$year';
+  }
+
+  Future<String?> _pickDateOfBirth() async {
+    final parsedDate = _parseDisplayDate(_dateOfBirth ?? '');
+    final now = DateTime.now();
+    final initialDate = parsedDate != null && !parsedDate.isAfter(now)
+        ? parsedDate
+        : DateTime(now.year - 18, now.month, now.day);
+
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(1900),
+      lastDate: now,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: ColorUtils.primaryColor,
+              onPrimary: Colors.white,
+              onSurface: ColorUtils.primaryColor,
+            ),
+            dialogBackgroundColor: Colors.white,
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: ColorUtils.primaryColor,
+                textStyle: const TextStyle(
+                  fontFamily: fontFamilyPoppinsMedium,
+                  fontSize: fontMedium,
+                ),
+              ),
+            ),
+          ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
+    );
+
+    if (pickedDate == null) {
+      return null;
+    }
+
+    return _formatDisplayDate(pickedDate);
   }
 
   Widget _getGenderDropDown() {
     return Container(
       padding: const EdgeInsets.only(
-          top: spacingSmall, left: spacingLarge, right: spacingLarge),
+        top: spacingSmall,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
       child: DropdownButtonFormField<String>(
         isExpanded: true,
         style: const TextStyle(
@@ -224,10 +349,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
         initialValue: _gender,
         items: _genderOptions.map((value) {
           final label = value == "male" ? "Male" : "Female";
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(label),
-          );
+          return DropdownMenuItem<String>(value: value, child: Text(label));
         }).toList(),
         onChanged: (String? newValueSelected) {
           setState(() {
@@ -247,8 +369,11 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   Widget _getResidentialAddressTextField() {
     return Container(
       padding: const EdgeInsets.only(
-          top: spacingSmall, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+        top: spacingSmall,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _residentialAddressFocus,
         onSaved: (value) {
@@ -279,8 +404,11 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   Widget _getEmailTextField() {
     return Container(
       padding: const EdgeInsets.only(
-          top: spacingSmall, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+        top: spacingSmall,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _emailFocus,
         onSaved: (value) {
@@ -303,8 +431,11 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   Widget _getAgentEmailTextField() {
     return Container(
       padding: const EdgeInsets.only(
-          top: spacingSmall, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+        top: spacingSmall,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _agentEmailFocus,
         onSaved: (value) {
@@ -327,8 +458,11 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   Widget _getMobileTextField() {
     return Container(
       padding: const EdgeInsets.only(
-          top: spacingSmall, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+        top: spacingSmall,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _mobileFocus,
         onSaved: (value) {
@@ -356,8 +490,11 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   Widget _getAgentMobileTextField() {
     return Container(
       padding: const EdgeInsets.only(
-          top: spacingSmall, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+        top: spacingSmall,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
+      child: OneTrustTextField(
         maxLength: 10,
         textInputAction: TextInputAction.next,
         focusNode: _agentMobileFocus,
@@ -370,7 +507,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
         },
         type: TextInputType.phone,
         textInputFormatter: <TextInputFormatter>[
-          FilteringTextInputFormatter.digitsOnly
+          FilteringTextInputFormatter.digitsOnly,
         ],
         hint: Localization.of(context).mobileNumber,
         label: Localization.of(context).mobileNumber,
@@ -379,10 +516,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
         prefixCountryCode: countryCode,
         isPrefixCountryCode: true,
         validateFunction: (value) {
-          return Utils.isMobileNumberValid(
-            context,
-            value,
-          );
+          return Utils.isMobileNumberValid(context, value);
         },
       ),
     );
@@ -391,8 +525,11 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   Widget _getFirstNameTextField() {
     return Container(
       padding: const EdgeInsets.only(
-          top: spacingXLarge, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+        top: spacingXLarge,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _firstNameFocus,
         onSaved: (value) {
@@ -423,8 +560,11 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   Widget _getAgentFirstNameTextField() {
     return Container(
       padding: const EdgeInsets.only(
-          top: spacingMedium, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+        top: spacingMedium,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _agentFirstNameFocus,
         onSaved: (value) {
@@ -455,8 +595,11 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   Widget _getBusinessNameTextField() {
     return Container(
       padding: const EdgeInsets.only(
-          top: spacingXLarge, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+        top: spacingXLarge,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _businessNameFocus,
         onSaved: (value) {
@@ -482,41 +625,46 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
 
   Widget _getCategoryOfBusinessDropDown() {
     return Container(
-        padding: const EdgeInsets.only(
-            top: spacingSmall, left: spacingLarge, right: spacingLarge),
-        child: DropdownButtonFormField(
-          isExpanded: true,
-          style: const TextStyle(
-              color: ColorUtils.primaryColor,
-              fontSize: fontLarge,
-              fontFamily: fontFamilyPoppinsRegular),
-          validator: (value) => value == null
-              ? Localization.of(context).errorCategoryOfBusiness
-              : null,
-          hint: Text(
-            Localization.of(context).categoryOfBusiness,
-            style: const TextStyle(color: ColorUtils.primaryColor),
-          ),
-          items: __categoryOfBusinessDropDowns.map((value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-          initialValue: _categoryOfBusinessDropDown,
-          onChanged: (String? newValueSelected) {
-            setState(() {
-              _categoryOfBusinessDropDown = newValueSelected;
-            });
-          },
-        ));
+      padding: const EdgeInsets.only(
+        top: spacingSmall,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
+      child: DropdownButtonFormField(
+        isExpanded: true,
+        style: const TextStyle(
+          color: ColorUtils.primaryColor,
+          fontSize: fontLarge,
+          fontFamily: fontFamilyPoppinsRegular,
+        ),
+        validator: (value) => value == null
+            ? Localization.of(context).errorCategoryOfBusiness
+            : null,
+        hint: Text(
+          Localization.of(context).categoryOfBusiness,
+          style: const TextStyle(color: ColorUtils.primaryColor),
+        ),
+        items: __categoryOfBusinessDropDowns.map((value) {
+          return DropdownMenuItem<String>(value: value, child: Text(value));
+        }).toList(),
+        initialValue: _categoryOfBusinessDropDown,
+        onChanged: (String? newValueSelected) {
+          setState(() {
+            _categoryOfBusinessDropDown = newValueSelected;
+          });
+        },
+      ),
+    );
   }
 
   Widget _getDescOfBusinessTextField() {
     return Container(
       padding: const EdgeInsets.only(
-          top: spacingSmall, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+        top: spacingSmall,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _decsOfBusinessFocus,
         onSaved: (value) {
@@ -544,8 +692,11 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   Widget _getLastNameTextField() {
     return Container(
       padding: const EdgeInsets.only(
-          top: spacingSmall, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+        top: spacingSmall,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _lastNameFocus,
         onSaved: (value) {
@@ -553,7 +704,6 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
         },
         onFieldSubmitted: (_) {
           _lastNameFocus.unfocus();
-          FocusScope.of(context).requestFocus(_dateOfBirthFocus);
         },
         textInputFormatter: [
           FilteringTextInputFormatter(nameRegex(), allow: true),
@@ -576,8 +726,11 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   Widget _getAgentLastNameTextField() {
     return Container(
       padding: const EdgeInsets.only(
-          top: spacingSmall, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+        top: spacingSmall,
+        left: spacingLarge,
+        right: spacingLarge,
+      ),
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _agentLastNameFocus,
         onSaved: (value) {
@@ -606,18 +759,18 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   }
 
   Widget _getNextButton() => Column(
-        children: [
-          termsAndPolicyWidget(),
-          Padding(
-            padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
-            child: PaymishPrimaryButton(
-              buttonText: Localization.of(context).next,
-              isBackground: true,
-              onButtonClick: _nextPressed,
-            ),
-          ),
-        ],
-      );
+    children: [
+      termsAndPolicyWidget(),
+      Padding(
+        padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
+        child: OneTrustPrimaryButton(
+          buttonText: Localization.of(context).next,
+          isBackground: true,
+          onButtonClick: _nextPressed,
+        ),
+      ),
+    ],
+  );
 
   Widget termsAndPolicyWidget() {
     return Padding(
@@ -625,93 +778,102 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
-            text: Localization.of(context).labelAgreeTermsAndCondition,
-            style: const TextStyle(
+          text: Localization.of(context).labelAgreeTermsAndCondition,
+          style: const TextStyle(
+            fontSize: fontMedium,
+            fontFamily: fontFamilyPoppinsLight,
+            color: ColorUtils.blackColor,
+            fontWeight: FontWeight.w400,
+          ),
+          children: <TextSpan>[
+            TextSpan(
+              text: Localization.of(context).termsAndCondition,
+              style: const TextStyle(
                 fontSize: fontMedium,
-                fontFamily: fontFamilyPoppinsLight,
-                color: ColorUtils.blackColor,
-                fontWeight: FontWeight.w400),
-            children: <TextSpan>[
-              TextSpan(
-                  text: Localization.of(context).termsAndCondition,
-                  style: const TextStyle(
-                      fontSize: fontMedium, fontWeight: FontWeight.w900),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () => _cmsPressed(isPrivacyPolicy: false)),
-              TextSpan(
-                text: Localization.of(context).labelAnd,
+                fontWeight: FontWeight.w900,
               ),
-              TextSpan(
-                  text: Localization.of(context).privacyPolicy,
-                  style: const TextStyle(
-                      fontSize: fontMedium, fontWeight: FontWeight.w900),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () => _cmsPressed(isPrivacyPolicy: true)),
-            ]),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () => _cmsPressed(isPrivacyPolicy: false),
+            ),
+            TextSpan(text: Localization.of(context).labelAnd),
+            TextSpan(
+              text: Localization.of(context).privacyPolicy,
+              style: const TextStyle(
+                fontSize: fontMedium,
+                fontWeight: FontWeight.w900,
+              ),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () => _cmsPressed(isPrivacyPolicy: true),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _getPasswordTextField() => Container(
-        padding: const EdgeInsets.only(
-            left: spacingLarge,
-            right: spacingLarge,
-            bottom: spacingSmall,
-            top: spacingSmall),
-        child: PaymishTextField(
-          textInputAction: TextInputAction.done,
-        focusNode: _passwordFocus,
-        onSaved: (value) {
-          _password = value ?? '';
-        },
-          hint: Localization.of(context).password,
-          label: Localization.of(context).password,
-          isObscureText: true,
-          isPassword: true,
-          trailingIcon: ImageConstants.icPasswordEye,
-          endIconClick: (_) {},
-          onFieldSubmitted: (_) {
-            _passwordFocus.unfocus();
-          },
-          validateFunction: (value) {
-            return Utils.isValidPassword(context, value);
-          },
-        ),
-      );
+    padding: const EdgeInsets.only(
+      left: spacingLarge,
+      right: spacingLarge,
+      bottom: spacingSmall,
+      top: spacingSmall,
+    ),
+    child: OneTrustTextField(
+      textInputAction: TextInputAction.done,
+      focusNode: _passwordFocus,
+      onSaved: (value) {
+        _password = value ?? '';
+      },
+      hint: Localization.of(context).password,
+      label: Localization.of(context).password,
+      isObscureText: true,
+      isPassword: true,
+      trailingIcon: ImageConstants.icPasswordEye,
+      endIconClick: (_) {},
+      onFieldSubmitted: (_) {
+        _passwordFocus.unfocus();
+      },
+      validateFunction: (value) {
+        return Utils.isValidPassword(context, value);
+      },
+    ),
+  );
 
   Widget _getAgentPasswordTextField() => Container(
-        padding: const EdgeInsets.only(
-            left: spacingLarge,
-            right: spacingLarge,
-            bottom: spacingSmall,
-            top: spacingSmall),
-        child: PaymishTextField(
-          textInputAction: TextInputAction.done,
-        focusNode: _agentPasswordFocus,
-        onSaved: (value) {
-          _agentPassword = value ?? '';
-        },
-          hint: Localization.of(context).password,
-          label: Localization.of(context).password,
-          isObscureText: true,
-          isPassword: true,
-          trailingIcon: ImageConstants.icPasswordEye,
-          endIconClick: (_) {},
-          onFieldSubmitted: (_) {
-            _agentPasswordFocus.unfocus();
-          },
-          validateFunction: (value) {
-            return Utils.isValidPassword(context, value);
-          },
-        ),
-      );
+    padding: const EdgeInsets.only(
+      left: spacingLarge,
+      right: spacingLarge,
+      bottom: spacingSmall,
+      top: spacingSmall,
+    ),
+    child: OneTrustTextField(
+      textInputAction: TextInputAction.done,
+      focusNode: _agentPasswordFocus,
+      onSaved: (value) {
+        _agentPassword = value ?? '';
+      },
+      hint: Localization.of(context).password,
+      label: Localization.of(context).password,
+      isObscureText: true,
+      isPassword: true,
+      trailingIcon: ImageConstants.icPasswordEye,
+      endIconClick: (_) {},
+      onFieldSubmitted: (_) {
+        _agentPasswordFocus.unfocus();
+      },
+      validateFunction: (value) {
+        return Utils.isValidPassword(context, value);
+      },
+    ),
+  );
 
   void _nextPressed() {
     if (_userFormKey.currentState?.validate() ?? false) {
       _userFormKey.currentState?.save();
       ProgressDialogUtils.showProgressDialog(context);
       UserApiManager()
-          .signUp(ReqSignUp(
+          .signUp(
+            ReqSignUp(
               firstName: (_firstName ?? '').trim(),
               lastName: (_lastName ?? '').trim(),
               dateOfBirth: (_dateOfBirth ?? '').trim(),
@@ -720,62 +882,77 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
               email: (_email ?? '').trim(),
               mobile: (_mobile ?? '').trim(),
               password: (_password ?? '').trim(),
-              role: DicParams.roleUser))
+              role: DicParams.roleUser,
+            ),
+          )
           .then((value) async {
-        ProgressDialogUtils.dismissProgressDialog();
-        await clearAfterEditProfile();
-        await NavigationUtils.push(context, routeLoginVerifyOTP, arguments: {
-          NavigationParams.phoneNumber: (_mobile ?? '').trim(),
-          NavigationParams.type: DicParams.signUpMobile,
-          NavigationParams.isFromAuth: true
-        });
-        await DialogUtils.displayToast(Localization.of(context).msgSignUpSuccess);
-      }).catchError((dynamic e) {
-        if (e is ResBaseModel) {
-          debugPrint(e.error);
-        }
-        ProgressDialogUtils.dismissProgressDialog();
-        DialogUtils.showAlertDialog(context, e.error ?? '');
-      });
+            ProgressDialogUtils.dismissProgressDialog();
+            await clearAfterEditProfile();
+            await NavigationUtils.push(
+              context,
+              routeLoginVerifyOTP,
+              arguments: {
+                NavigationParams.phoneNumber: (_mobile ?? '').trim(),
+                NavigationParams.type: DicParams.signUpMobile,
+                NavigationParams.isFromAuth: true,
+              },
+            );
+            await DialogUtils.displayToast(
+              Localization.of(context).msgSignUpSuccess,
+            );
+          })
+          .catchError((dynamic e) {
+            if (e is ResBaseModel) {
+              debugPrint(e.message ?? e.error);
+            }
+            ProgressDialogUtils.dismissProgressDialog();
+            final errorMessage = e is ResBaseModel
+                ? (e.message ?? e.error ?? 'Unable to complete signup')
+                : 'Unable to complete signup';
+            DialogUtils.showAlertDialog(context, errorMessage);
+          });
     }
   }
 
   Widget _getAccountRegister() => Container(
-        margin: const EdgeInsets.only(top: spacingXLarge),
-        child: Column(
-          children: [
-            RichText(
-              text: TextSpan(
-                  text: Localization.of(context).alreadyHaveAccount,
-                  style: const TextStyle(
-                    fontSize: fontLarge,
-                    fontWeight: FontWeight.w300,
-                    fontFamily: fontFamilyPoppinsLight,
-                    color: ColorUtils.darkGrey1,
-                  ),
-                  children: <TextSpan>[
-                    TextSpan(
-                        text: Localization.of(context).signInTitle,
-                        style: const TextStyle(
-                          fontSize: fontLarge,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: fontFamilyPoppinsMedium,
-                          color: ColorUtils.primaryColor,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            NavigationUtils.pushAndRemoveUntil(
-                                context, routeLogin);
-                          })
-                  ]),
+    margin: const EdgeInsets.only(top: spacingXLarge),
+    child: Column(
+      children: [
+        RichText(
+          text: TextSpan(
+            text: Localization.of(context).alreadyHaveAccount,
+            style: const TextStyle(
+              fontSize: fontLarge,
+              fontWeight: FontWeight.w300,
+              fontFamily: fontFamilyPoppinsLight,
+              color: ColorUtils.darkGrey1,
             ),
-          ],
+            children: <TextSpan>[
+              TextSpan(
+                text: Localization.of(context).signInTitle,
+                style: const TextStyle(
+                  fontSize: fontLarge,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: fontFamilyPoppinsMedium,
+                  color: ColorUtils.primaryColor,
+                ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    NavigationUtils.pushAndRemoveUntil(context, routeLogin);
+                  },
+              ),
+            ],
+          ),
         ),
-      );
+      ],
+    ),
+  );
 
   void _cmsPressed({bool isPrivacyPolicy = false}) {
-    NavigationUtils.push(context, routePrivacyPolicy, arguments: {
-      NavigationParams.isPrivacyPolicy: isPrivacyPolicy,
-    });
+    NavigationUtils.push(
+      context,
+      routePrivacyPolicy,
+      arguments: {NavigationParams.isPrivacyPolicy: isPrivacyPolicy},
+    );
   }
 }

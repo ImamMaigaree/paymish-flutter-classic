@@ -12,9 +12,9 @@ import '../../utils/navigation.dart';
 import '../../utils/preference_key.dart';
 import '../../utils/preference_utils.dart';
 import '../../utils/progress_dialog.dart';
-import '../../widgets/paymish_appbar.dart';
-import '../../widgets/paymish_menu_list_item.dart';
-import '../../widgets/paymish_switch_view.dart';
+import '../../widgets/one_trust_appbar.dart';
+import '../../widgets/one_trust_menu_list_item.dart';
+import '../../widgets/one_trust_switch_view.dart';
 import 'model/req_account_setting.dart';
 
 class AccountSettingScreen extends StatefulWidget {
@@ -44,7 +44,7 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PaymishAppBar(
+      appBar: OneTrustAppBar(
         title: Localization.of(context).accountSettings,
         isBackGround: false,
       ),
@@ -52,13 +52,13 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
         padding: const EdgeInsets.all(spacingMedium),
         child: Column(
           children: [
-            PaymishMenuListItem(
+            OneTrustMenuListItem(
               titleText: Localization.of(context).labelChangePassword,
               onClick: () {
                 changePasswordPressed(context);
               },
             ),
-            PaymishMenuListItem(
+            OneTrustMenuListItem(
               titleText: Localization.of(context).labelChangeTransactionPIN,
               onClick: () {
                 changeTransactionPinPressed(context);
@@ -83,20 +83,20 @@ class _AccountSettingScreenState extends State<AccountSettingScreen> {
                     left: spacingMedium),
                 child: Column(
                   children: [
-                    PaymishSwitchView(
+                    OneTrustSwitchView(
                         title: Localization.of(context).labelNotification,
                         value: _isNotificationChecked,
                         onButtonClick: setNotificationValue),
                     Padding(
                       padding: const EdgeInsets.only(
                           top: spacingXXXLarge, bottom: spacingXXXLarge),
-                      child: PaymishSwitchView(
+                      child: OneTrustSwitchView(
                           title:
                               Localization.of(context).labelEmailNotification,
                           value: _isEmailNotificationChecked,
                           onButtonClick: setEmailNotificationValue),
                     ),
-                    PaymishSwitchView(
+                    OneTrustSwitchView(
                         title: Localization.of(context).labelPushNotification,
                         value: _isPushNotificationChecked,
                         onButtonClick: setPushNotificationValue),

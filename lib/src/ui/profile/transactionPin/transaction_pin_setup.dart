@@ -17,9 +17,9 @@ import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/paymish_appbar.dart';
-import '../../../widgets/paymish_primary_button.dart';
-import '../../../widgets/paymish_text_field.dart';
+import '../../../widgets/one_trust_appbar.dart';
+import '../../../widgets/one_trust_primary_button.dart';
+import '../../../widgets/one_trust_text_field.dart';
 import 'model/req_transaction_pin.dart';
 
 class TransactionPinSetupScreen extends StatefulWidget {
@@ -68,7 +68,7 @@ class _TransactionPinSetupScreenState extends State<TransactionPinSetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget.showBackButton
-          ? PaymishAppBar(
+          ? OneTrustAppBar(
               title: Localization.of(context).labelTransActionPinSetup,
               isBackGround: false,
             )
@@ -142,7 +142,7 @@ class _TransactionPinSetupScreenState extends State<TransactionPinSetupScreen> {
     return Container(
       padding: const EdgeInsets.only(
           top: spacingMedium, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _transactionPinFocus,
         onSaved: (value) {
@@ -176,7 +176,7 @@ class _TransactionPinSetupScreenState extends State<TransactionPinSetupScreen> {
     return Container(
       padding: const EdgeInsets.only(
           top: spacingMedium, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+      child: OneTrustTextField(
         textInputAction: TextInputAction.done,
         focusNode: _confirmTransactionPinFocus,
         controller: _confirmTransactionPinController,
@@ -209,7 +209,7 @@ class _TransactionPinSetupScreenState extends State<TransactionPinSetupScreen> {
               left: spacingSmall,
               right: spacingLarge,
               bottom: spacingLarge),
-          child: PaymishPrimaryButton(
+          child: OneTrustPrimaryButton(
             buttonText: Localization.of(context).labelSubmit,
             isBackground: true,
             onButtonClick: _submitPressed,
@@ -224,7 +224,7 @@ class _TransactionPinSetupScreenState extends State<TransactionPinSetupScreen> {
               left: spacingLarge,
               right: spacingSmall,
               bottom: spacingLarge),
-          child: PaymishPrimaryButton(
+          child: OneTrustPrimaryButton(
             buttonText: Localization.of(context).labelSkip,
             isBackground: false,
             onButtonClick: _skipPressed,

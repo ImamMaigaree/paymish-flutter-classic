@@ -2,7 +2,7 @@ import 'localization.dart';
 
 class LocalizationEN implements Localization {
   @override
-  String get appName => "Paymish";
+  String get appName => "1Trust";
 
   @override
   String get loginTitle => "Login";
@@ -476,7 +476,7 @@ class LocalizationEN implements Localization {
   String get utilitybill => "Utility Bill";
 
   @override
-  String get labelMerchantHomeScreen => "Paymish Merchant Panel";
+  String get labelMerchantHomeScreen => "1Trust Merchant Panel";
 
   @override
   String get labelTotalCommissionPaid => "Total Commission Paid";
@@ -746,7 +746,7 @@ class LocalizationEN implements Localization {
   String get labelCreditDebitCard => "Credit / Debit Card";
 
   @override
-  String get labelPaymishWallet => "Paymish Wallet";
+  String get labelOneTrustWallet => "1Trust Wallet";
 
   @override
   String get labelSearch => "Search";
@@ -958,7 +958,7 @@ class LocalizationEN implements Localization {
 
   @override
   String get msgAccountNotApproved =>
-      """Your account has been not approved by Paymish adminstration. You can perform the transaction once its approved.""";
+      """Your account has been not approved by 1Trust administration. You can perform the transaction once it is approved.""";
 
   @override
   String get labelNoTicketsFound => "No Support Tickets Found";
@@ -1063,10 +1063,10 @@ class LocalizationEN implements Localization {
 
   @override
   String get desc1Merchant =>
-      "A mobile phone with Paymish is all your customer needs.";
+      "A mobile phone with 1Trust is all your customer needs.";
 
   @override
-  String get desc1User => "Paymish is an easy way to send and receive money.";
+  String get desc1User => "1Trust is an easy way to send and receive money.";
 
   @override
   String get desc2Merchant => "Money straight into your bank account.";

@@ -539,7 +539,7 @@ abstract class Localization {
 
   String get labelBank;
 
-  String get labelPaymishWallet;
+  String get labelOneTrustWallet;
 
   String get labelSearch;
 

@@ -13,9 +13,9 @@ import '../../../utils/navigation.dart';
 import '../../../utils/navigation_params.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/paymish_appbar.dart';
-import '../../../widgets/paymish_primary_button.dart';
-import '../../../widgets/paymish_text_field.dart';
+import '../../../widgets/one_trust_appbar.dart';
+import '../../../widgets/one_trust_primary_button.dart';
+import '../../../widgets/one_trust_text_field.dart';
 import 'model/req_forget_password.dart';
 
 // ignore: must_be_immutable
@@ -29,7 +29,7 @@ class ForgotPasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PaymishAppBar(
+      appBar: OneTrustAppBar(
         title: Localization.of(context).forgotPasswordLabel,
         isBackGround: false,
       ),
@@ -57,7 +57,7 @@ class ForgotPasswordScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingLarge),
-      child: PaymishPrimaryButton(
+      child: OneTrustPrimaryButton(
         buttonText: Localization.of(context).labelProceed,
         isBackground: true,
         onButtonClick: () => _proceedPressed(context),
@@ -72,7 +72,7 @@ class ForgotPasswordScreen extends StatelessWidget {
           left: spacingLarge,
           right: spacingLarge,
           bottom: spacingXXLarge),
-      child: PaymishTextField(
+      child: OneTrustTextField(
         controller: _emailController,
         hint: Localization.of(context).emailAddress,
         label: Localization.of(context).emailAddress,
@@ -113,7 +113,7 @@ class ForgotPasswordScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingXXLarge),
-      child: PaymishTextField(
+      child: OneTrustTextField(
         controller: _phoneNumberController,
         hint: Localization.of(context).phoneNumber,
         label: Localization.of(context).phoneNumber,

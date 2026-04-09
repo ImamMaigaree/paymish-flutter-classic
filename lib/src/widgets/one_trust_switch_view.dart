@@ -6,12 +6,12 @@ import '../utils/constants.dart';
 import '../utils/dimens.dart';
 
 @immutable
-class PaymishSwitchView extends StatelessWidget {
+class OneTrustSwitchView extends StatelessWidget {
   final bool value;
   final String title;
   final VoidCallback onButtonClick;
 
-  const PaymishSwitchView({
+  const OneTrustSwitchView({
     super.key,
     required this.value,
     required this.title,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../utils/color_utils.dart';
 import '../utils/localization/localization.dart';
-import 'paymish_primary_button.dart';
+import 'one_trust_primary_button.dart';
 
 class CommonPermissionPopup extends StatelessWidget {
   final String icon;
@@ -94,7 +94,7 @@ class CommonPermissionPopup extends StatelessWidget {
       required String title,
       required VoidCallback onClick}) {
     return Expanded(
-      child: PaymishPrimaryButton(
+      child: OneTrustPrimaryButton(
         buttonText: title,
         isBackground: isBackGround,
         onButtonClick: onClick,

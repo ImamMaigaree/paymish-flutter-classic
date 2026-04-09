@@ -11,9 +11,9 @@ import '../../../utils/localization/localization.dart';
 import '../../../utils/navigation.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/paymish_appbar.dart';
-import '../../../widgets/paymish_primary_button.dart';
-import '../../../widgets/paymish_text_field.dart';
+import '../../../widgets/one_trust_appbar.dart';
+import '../../../widgets/one_trust_primary_button.dart';
+import '../../../widgets/one_trust_text_field.dart';
 import '../forgot_password/model/res_forget_password.dart';
 import 'model/req_reset_password.dart';
 
@@ -49,7 +49,7 @@ class ConfirmPasswordScreen extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: PaymishAppBar(
+        appBar: OneTrustAppBar(
           title: Localization.of(context).newPasswordLabel,
           isBackGround: false,
           isFromAuth: false,
@@ -81,7 +81,7 @@ class ConfirmPasswordScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingLarge),
-      child: PaymishPrimaryButton(
+      child: OneTrustPrimaryButton(
         buttonText: Localization.of(context).labelSubmit,
         isBackground: true,
         onButtonClick: () => _submitPressed(context),
@@ -92,7 +92,7 @@ class ConfirmPasswordScreen extends StatelessWidget {
   Widget confirmPasswordFieldWidget(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: spacingXLarge, right: spacingXLarge),
-      child: PaymishTextField(
+      child: OneTrustTextField(
         controller: _confirmPasswordController,
         hint: Localization.of(context).confirmPasswordLabel,
         label: Localization.of(context).confirmPasswordLabel,
@@ -117,7 +117,7 @@ class ConfirmPasswordScreen extends StatelessWidget {
   Widget newPasswordFieldWidget(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(spacingXLarge),
-      child: PaymishTextField(
+      child: OneTrustTextField(
         controller: _newPasswordController,
         hint: Localization.of(context).newPasswordLabel,
         label: Localization.of(context).newPasswordLabel,

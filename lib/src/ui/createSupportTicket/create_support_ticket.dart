@@ -11,9 +11,9 @@ import '../../utils/localization/localization.dart';
 import '../../utils/navigation.dart';
 import '../../utils/progress_dialog.dart';
 import '../../utils/utils.dart';
-import '../../widgets/paymish_appbar.dart';
-import '../../widgets/paymish_primary_button.dart';
-import '../../widgets/paymish_text_field.dart';
+import '../../widgets/one_trust_appbar.dart';
+import '../../widgets/one_trust_primary_button.dart';
+import '../../widgets/one_trust_text_field.dart';
 import 'model/req_create_support_ticket.dart';
 import 'model/res_category_list.dart';
 
@@ -49,7 +49,7 @@ class _CreateSupportTicketState extends State<CreateSupportTicket> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PaymishAppBar(
+      appBar: OneTrustAppBar(
         isBackGround: false,
         title: Localization.of(context).labelCreateSupportTicket,
       ),
@@ -84,7 +84,7 @@ class _CreateSupportTicketState extends State<CreateSupportTicket> {
     return Padding(
       padding: const EdgeInsets.only(
           top: spacingLarge, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+      child: OneTrustTextField(
         maxLength: 150,
         controller: _descriptionController,
         hint: Localization.of(context).labelDescription,
@@ -108,7 +108,7 @@ class _CreateSupportTicketState extends State<CreateSupportTicket> {
     return Padding(
       padding: const EdgeInsets.only(
           top: spacingLarge, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+      child: OneTrustTextField(
         maxLength: 60,
         controller: _titleController,
         hint: Localization.of(context).labelTitle,
@@ -164,7 +164,7 @@ class _CreateSupportTicketState extends State<CreateSupportTicket> {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingLarge),
-      child: PaymishPrimaryButton(
+      child: OneTrustPrimaryButton(
         buttonText: Localization.of(context).save,
         isBackground: true,
         onButtonClick: () => _submitPressed(context),

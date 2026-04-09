@@ -1,5 +1,5 @@
 #include "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
 
-name_suffix = Paymish-User-Stage
+name_suffix = 1Trust-User-Stage
 bundle_suffix = .user.stage

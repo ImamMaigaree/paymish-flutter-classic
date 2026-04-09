@@ -14,7 +14,7 @@ import '../../../utils/navigation_params.dart';
 import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/progress_dialog.dart';
-import '../../../widgets/paymish_appbar.dart';
+import '../../../widgets/one_trust_appbar.dart';
 import '../../../widgets/recent_list_view.dart';
 import '../../auth/home/provider/home_screen_provider.dart';
 import '../../transfermoney/model/res_transfer_money_list.dart';
@@ -41,7 +41,7 @@ class _ScanAndPayState extends State<ScanAndPay> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PaymishAppBar(
+      appBar: OneTrustAppBar(
         title: Localization.of(context).scanAndPayHeader,
         isBackGround: false,
       ),

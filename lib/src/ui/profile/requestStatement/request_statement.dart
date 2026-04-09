@@ -18,9 +18,9 @@ import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/paymish_appbar.dart';
-import '../../../widgets/paymish_primary_button.dart';
-import '../../../widgets/paymish_text_field.dart';
+import '../../../widgets/one_trust_appbar.dart';
+import '../../../widgets/one_trust_primary_button.dart';
+import '../../../widgets/one_trust_text_field.dart';
 
 class RequestStatement extends StatefulWidget {
   const RequestStatement({Key? key}) : super(key: key);
@@ -131,7 +131,7 @@ class _RequestStatementState extends State<RequestStatement> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PaymishAppBar(
+      appBar: OneTrustAppBar(
         isBackGround: false,
         title: Localization.of(context).requestStatement,
       ),
@@ -237,7 +237,7 @@ class _RequestStatementState extends State<RequestStatement> {
           child: Padding(
             padding:
                 const EdgeInsets.only(left: spacingSmall, right: spacingLarge),
-            child: PaymishTextField(
+            child: OneTrustTextField(
               trailingIcon: ImageConstants.icCalender,
               hint: Localization.of(context).labelEndDate,
               label: Localization.of(context).labelEndDate,
@@ -261,7 +261,7 @@ class _RequestStatementState extends State<RequestStatement> {
           child: Padding(
             padding:
                 const EdgeInsets.only(left: spacingLarge, right: spacingSmall),
-            child: PaymishTextField(
+            child: OneTrustTextField(
               trailingIcon: ImageConstants.icCalender,
               hint: Localization.of(context).labelStartDate,
               label: Localization.of(context).labelStartDate,
@@ -282,7 +282,7 @@ class _RequestStatementState extends State<RequestStatement> {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingLarge),
-      child: PaymishPrimaryButton(
+      child: OneTrustPrimaryButton(
         buttonText: Localization.of(context).labelSubmit,
         isBackground: true,
         onButtonClick: () => _submitPressed(context),

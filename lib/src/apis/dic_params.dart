@@ -189,4 +189,10 @@ class DicParams {
   static const String bankHolderName = "bankHolderName";
   static const String reference = "reference";
   static const String accessCode = "access_code";
+  static const String sessionId = "sessionId";
+  static const String provider = "provider";
+  static const String authorizationUrl = "authorizationUrl";
+  static const String state = "state";
+  static const String pendingConsent = "pending_consent";
+  static const String validated = "validated";
 }

@@ -7,8 +7,8 @@ import '../../../../utils/dimens.dart';
 import '../../../../utils/navigation.dart';
 import '../../../../utils/navigation_params.dart';
 import '../../../../utils/utils.dart';
-import '../../../../widgets/paymish_appbar.dart';
-import '../../../../widgets/paymish_primary_button.dart';
+import '../../../../widgets/one_trust_appbar.dart';
+import '../../../../widgets/one_trust_primary_button.dart';
 import '../../../paymentSetting/model/res_bank_details.dart';
 import '../../transactionPin/model/req_withdraw_money_to_bank.dart';
 import 'provider/withdraw_money_provider.dart';
@@ -34,7 +34,7 @@ class ReviewBankTransferScreen extends StatelessWidget {
         : (bankDetail.bankHolderName ?? "").trim();
 
     return Scaffold(
-      appBar: const PaymishAppBar(
+      appBar: const OneTrustAppBar(
         title: "Review Transfer",
         isBackGround: false,
       ),
@@ -137,7 +137,7 @@ class ReviewBankTransferScreen extends StatelessWidget {
               spacingLarge,
               spacingLarge,
             ),
-            child: PaymishPrimaryButton(
+            child: OneTrustPrimaryButton(
               buttonText: "Proceed to PIN",
               isBackground: true,
               onButtonClick: () {

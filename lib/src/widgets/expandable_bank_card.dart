@@ -8,7 +8,7 @@ import '../utils/dialog_utils.dart';
 import '../utils/dimens.dart';
 import '../utils/localization/localization.dart';
 import '../utils/utils.dart';
-import 'paymish_text_field.dart';
+import 'one_trust_text_field.dart';
 
 class ExpandableCardCell extends StatefulWidget {
   final int bankId;
@@ -141,7 +141,7 @@ class _ExpandableCardCellState extends State<ExpandableCardCell> {
                             children: <Widget>[
                               Expanded(
                                 flex: 1,
-                                child: PaymishTextField(
+                                child: OneTrustTextField(
                                   controller: _cvvController,
                                   enabled: true,
                                   hint: Localization.of(context).labelCvv,

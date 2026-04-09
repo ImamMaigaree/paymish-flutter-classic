@@ -17,9 +17,9 @@ import '../../../../utils/preference_key.dart';
 import '../../../../utils/preference_utils.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widgets/header_with_amount.dart';
-import '../../../../widgets/paymish_appbar.dart';
-import '../../../../widgets/paymish_primary_button.dart';
-import '../../../../widgets/paymish_text_field.dart';
+import '../../../../widgets/one_trust_appbar.dart';
+import '../../../../widgets/one_trust_primary_button.dart';
+import '../../../../widgets/one_trust_text_field.dart';
 
 // ignore: must_be_immutable
 class AddMoneyToWallet extends StatefulWidget {
@@ -60,7 +60,7 @@ class _AddMoneyToWalletState extends State<AddMoneyToWallet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PaymishAppBar(
+      appBar: OneTrustAppBar(
         title: Localization.of(context).labelAddMoneyToWallet,
         isBackGround: false,
         isFromAuth: false,
@@ -105,7 +105,7 @@ class _AddMoneyToWalletState extends State<AddMoneyToWallet> {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingLarge),
-      child: PaymishPrimaryButton(
+      child: OneTrustPrimaryButton(
         buttonText: Localization.of(context).labelSubmit,
         isBackground: true,
         onButtonClick: () => _submitPressed(context),
@@ -116,7 +116,7 @@ class _AddMoneyToWalletState extends State<AddMoneyToWallet> {
   Widget _amountWidget(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(spacingXLarge),
-      child: PaymishTextField(
+      child: OneTrustTextField(
         controller: _amountController,
         hint: Localization.of(context).hintEnterAmount,
         label: Localization.of(context).hintEnterAmount,

@@ -6,8 +6,8 @@ import '../../../utils/dialog_utils.dart';
 import '../../../utils/dimens.dart';
 import '../../../utils/enum_utils.dart';
 import '../../../utils/localization/localization.dart';
-import '../../../widgets/paymish_appbar.dart';
-import '../../../widgets/paymish_commission_view.dart';
+import '../../../widgets/one_trust_appbar.dart';
+import '../../../widgets/one_trust_commission_view.dart';
 
 class MyCommissionsScreen extends StatefulWidget {
   const MyCommissionsScreen({Key? key}) : super(key: key);
@@ -29,7 +29,7 @@ class _MyCommissionsScreenState extends State<MyCommissionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PaymishAppBar(
+      appBar: OneTrustAppBar(
         isBackGround: false,
         title: Localization.of(context).myCommissions,
       ),
@@ -42,7 +42,7 @@ class _MyCommissionsScreenState extends State<MyCommissionsScreen> {
               itemCount: 10,
               itemBuilder: (context, pos) {
                 // Implement Data As Per API Response Here
-                return PaymishCommission(
+                return OneTrustCommission(
                   userImage: "https://via.placeholder.com/40",
                   amount: 100,
                   date: "1 Day Ago",

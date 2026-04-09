@@ -22,8 +22,8 @@ import '../../utils/navigation_params.dart';
 import '../../utils/preference_key.dart';
 import '../../utils/preference_utils.dart';
 import '../../utils/progress_dialog.dart';
-import '../../widgets/paymish_appbar.dart';
-import '../../widgets/paymish_primary_button.dart';
+import '../../widgets/one_trust_appbar.dart';
+import '../../widgets/one_trust_primary_button.dart';
 import '../../widgets/profile_image_view.dart';
 import '../chat/model/req_pay_money.dart';
 import '../profile/transactionPin/model/req_valid_amount.dart';
@@ -79,7 +79,7 @@ class _PayMoneyScreenState extends State<PayMoneyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorUtils.primaryColor,
-      appBar: PaymishAppBar(
+      appBar: OneTrustAppBar(
         title: Localization.of(context).labelPayment,
         isBackGround: true,
       ),
@@ -226,7 +226,7 @@ class _PayMoneyScreenState extends State<PayMoneyScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(
                     spacingMedium, spacing45, spacingMedium, spacingLarge),
-                child: PaymishPrimaryButton(
+                child: OneTrustPrimaryButton(
                     buttonText: Localization.of(context).labelProceedToPayment,
                     isBackground: true,
                     onButtonClick: () async {
@@ -353,7 +353,7 @@ class _PayMoneyScreenState extends State<PayMoneyScreen> {
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             Text(
-              Localization.of(context).labelPaymishWallet,
+              Localization.of(context).labelOneTrustWallet,
               style: const TextStyle(
                   fontFamily: fontFamilyPoppinsRegular,
                   fontSize: fontMedium,
@@ -701,7 +701,7 @@ class _PayMoneyScreenState extends State<PayMoneyScreen> {
         padding: const EdgeInsets.only(
           left: spacingSmall,
         ),
-        child: PaymishPrimaryButton(
+        child: OneTrustPrimaryButton(
             buttonText: Localization.of(context).labelSelect,
             isBackground: true,
             onButtonClick: () async {
@@ -720,7 +720,7 @@ class _PayMoneyScreenState extends State<PayMoneyScreen> {
         padding: const EdgeInsets.only(
           right: spacingSmall,
         ),
-        child: PaymishPrimaryButton(
+        child: OneTrustPrimaryButton(
             buttonText: Localization.of(context).cancel,
             isBackground: false,
             onButtonClick: () async {
@@ -757,7 +757,7 @@ class _PayMoneyScreenState extends State<PayMoneyScreen> {
     } else {
       platform = 'AN';
     }
-    return """PAYMISH_${platform}_${userId}_${DateTime.now().millisecondsSinceEpoch}""";
+    return """ONETRUST_${platform}_${userId}_${DateTime.now().millisecondsSinceEpoch}""";
   }
 
   void _addBank(String authID) {

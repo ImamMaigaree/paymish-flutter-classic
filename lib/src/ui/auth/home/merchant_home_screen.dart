@@ -20,7 +20,7 @@ import '../../../utils/preference_utils.dart';
 import '../../../utils/utils.dart';
 import '../../../widgets/common_permission_popup.dart';
 import '../../../widgets/merchant_home_row.dart';
-import '../../../widgets/paymish_home_appbar.dart';
+import '../../../widgets/one_trust_home_appbar.dart';
 import 'model/res_merchant_home.dart';
 import 'provider/home_screen_provider.dart';
 
@@ -153,7 +153,7 @@ class _MerchantHomeScreenState extends State<MerchantHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorUtils.merchantHomeBackgroundWhite,
-      appBar: PaymishHomeAppbar(
+      appBar: OneTrustHomeAppbar(
         isBackGround: false,
         titleVisible: false,
       ),

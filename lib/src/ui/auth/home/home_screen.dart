@@ -22,7 +22,7 @@ import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/utils.dart';
 import '../../../widgets/common_permission_popup.dart';
-import '../../../widgets/paymish_home_appbar.dart';
+import '../../../widgets/one_trust_home_appbar.dart';
 import '../../../widgets/recent_list_view.dart';
 import '../../profile/wallet/model/res_wallet_overview.dart';
 import 'model/res_home.dart';
@@ -161,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorUtils.homeBackgroundColor,
-      appBar: PaymishHomeAppbar(),
+      appBar: OneTrustHomeAppbar(),
       body: FutureBuilder<ResHomeScreen>(
         future: _getBankDetails(context),
         builder: (context, snapshot) {
@@ -513,12 +513,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             imageUrl,
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) => Image.asset(
-                              ImageConstants.icPaymishWhite,
+                              ImageConstants.icOneTrustWhite,
                               fit: BoxFit.cover,
                             ),
                           )
                         : Image.asset(
-                            ImageConstants.icPaymishWhite,
+                            ImageConstants.icOneTrustWhite,
                             fit: BoxFit.cover,
                           ),
                   ),

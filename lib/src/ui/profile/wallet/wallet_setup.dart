@@ -17,9 +17,9 @@ import '../../../utils/preference_key.dart';
 import '../../../utils/preference_utils.dart';
 import '../../../utils/progress_dialog.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/paymish_appbar.dart';
-import '../../../widgets/paymish_primary_button.dart';
-import '../../../widgets/paymish_text_field.dart';
+import '../../../widgets/one_trust_appbar.dart';
+import '../../../widgets/one_trust_primary_button.dart';
+import '../../../widgets/one_trust_text_field.dart';
 import '../../paymentSetting/model/res_bank_list.dart';
 import 'model/req_wallet_setup.dart';
 
@@ -81,7 +81,7 @@ class _WalletSetupScreenState extends State<WalletSetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget.showBackButton
-          ? PaymishAppBar(
+          ? OneTrustAppBar(
               title: Localization.of(context).labelWalletSetup,
               isBackGround: false,
             )
@@ -159,7 +159,7 @@ class _WalletSetupScreenState extends State<WalletSetupScreen> {
     return Container(
       padding: const EdgeInsets.only(
           top: spacingXLarge, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _bankNameFocus,
         onSaved: (value) {
@@ -187,7 +187,7 @@ class _WalletSetupScreenState extends State<WalletSetupScreen> {
     return Container(
       padding: const EdgeInsets.only(
           top: spacingMedium, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _accountNumberFocus,
         onSaved: (value) {
@@ -214,7 +214,7 @@ class _WalletSetupScreenState extends State<WalletSetupScreen> {
     return Container(
       padding: const EdgeInsets.only(
           top: spacingMedium, left: spacingLarge, right: spacingLarge),
-      child: PaymishTextField(
+      child: OneTrustTextField(
         textInputAction: TextInputAction.next,
         focusNode: _userNameFocus,
         onSaved: (value) {
@@ -274,7 +274,7 @@ class _WalletSetupScreenState extends State<WalletSetupScreen> {
               left: spacingSmall,
               right: spacingLarge,
               bottom: spacingXLarge),
-          child: PaymishPrimaryButton(
+          child: OneTrustPrimaryButton(
             buttonText: Localization.of(context).labelSubmit,
             isBackground: true,
             onButtonClick: _nextPressed,
@@ -289,7 +289,7 @@ class _WalletSetupScreenState extends State<WalletSetupScreen> {
               left: spacingLarge,
               right: spacingSmall,
               bottom: spacingXLarge),
-          child: PaymishPrimaryButton(
+          child: OneTrustPrimaryButton(
             buttonText: Localization.of(context).labelSkip,
             isBackground: false,
             onButtonClick: _skipPressed,

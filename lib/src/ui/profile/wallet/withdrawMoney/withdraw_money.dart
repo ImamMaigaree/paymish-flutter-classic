@@ -15,9 +15,9 @@ import '../../../../utils/navigation.dart';
 import '../../../../utils/navigation_params.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widgets/header_with_amount.dart';
-import '../../../../widgets/paymish_appbar.dart';
-import '../../../../widgets/paymish_primary_button.dart';
-import '../../../../widgets/paymish_text_field.dart';
+import '../../../../widgets/one_trust_appbar.dart';
+import '../../../../widgets/one_trust_primary_button.dart';
+import '../../../../widgets/one_trust_text_field.dart';
 import 'provider/withdraw_money_provider.dart';
 
 // ignore: must_be_immutable
@@ -49,7 +49,7 @@ class _WithDrawMoneyScreenState extends State<WithDrawMoneyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PaymishAppBar(
+      appBar: OneTrustAppBar(
         title: Localization.of(context).labelWithDrawMoneyToWallet,
         isBackGround: false,
       ),
@@ -95,7 +95,7 @@ class _WithDrawMoneyScreenState extends State<WithDrawMoneyScreen> {
     return Padding(
       padding: const EdgeInsets.only(
           left: spacingLarge, right: spacingLarge, bottom: spacingLarge),
-      child: PaymishPrimaryButton(
+      child: OneTrustPrimaryButton(
         buttonText: Localization.of(context).labelProceed,
         isBackground: true,
         onButtonClick: () => _proceedPressed(context),
@@ -108,7 +108,7 @@ class _WithDrawMoneyScreenState extends State<WithDrawMoneyScreen> {
       padding: const EdgeInsets.only(left: spacingXLarge, right: spacingXLarge),
       child: Column(
         children: [
-          PaymishTextField(
+          OneTrustTextField(
             controller: _withdrawAmountController,
             hint: Localization.of(context).hintEnterAmount,
             label: Localization.of(context).hintEnterAmount,

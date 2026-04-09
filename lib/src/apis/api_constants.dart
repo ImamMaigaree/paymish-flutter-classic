@@ -16,7 +16,8 @@ class ApiConstants {
   static const String apiContactSync = "user/contact-sync";
   static const String apiCms = "user/cms";
   static const String apiBankAccount = "user/bank-account";
-  static const String apiKycVerification = "user/kyc-verification";
+  static const String apiIgreeKycStart = "v1/kyc/sessions/igree/start";
+  static const String apiIgreeKycExchange = "v1/kyc/providers/igree/exchange";
   static const String apiUploadProfilePicture = "user/profile-picture";
   static const String apiBankDetails = "user-account";
   static const String apiDeleteBankAccount = "user-account";

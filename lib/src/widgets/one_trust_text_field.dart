@@ -7,7 +7,7 @@ import '../utils/dimens.dart';
 import '../utils/image_constants.dart';
 
 // ignore: file_names
-class PaymishTextField extends StatefulWidget {
+class OneTrustTextField extends StatefulWidget {
   final double? width;
   final String? label;
   final String? hint;
@@ -33,8 +33,10 @@ class PaymishTextField extends StatefulWidget {
   final ValueChanged<bool>? endIconClick;
   final ValueChanged<String>? onFieldSubmitted;
   final ValueChanged<String>? onChanged;
+  final GestureTapCallback? onTap;
+  final bool readOnly;
 
-  const PaymishTextField({
+  const OneTrustTextField({
     Key? key,
     this.width,
     this.label,
@@ -56,6 +58,8 @@ class PaymishTextField extends StatefulWidget {
     this.onFieldSubmitted,
     this.textInputFormatter,
     this.onChanged,
+    this.onTap,
+    this.readOnly = false,
     this.isHeaderVisible = false,
     this.isDropdown = false,
     this.isPrefixCountryCode = false,
@@ -64,7 +68,7 @@ class PaymishTextField extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => PaymishTextFieldState();
+  State<StatefulWidget> createState() => OneTrustTextFieldState();
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -79,25 +83,44 @@ class PaymishTextField extends StatefulWidget {
     properties.add(IntProperty('maxLength', maxLength));
     properties.add(StringProperty('prefixCountryCode', prefixCountryCode));
     properties.add(StringProperty('initialValue', initialValue));
-    properties.add(EnumProperty<TextInputAction>('textInputAction', textInputAction));
-    properties.add(IterableProperty<TextInputFormatter>('textInputFormatter', textInputFormatter));
-    properties.add(DiagnosticsProperty<TextEditingController>('controller', controller));
+    properties.add(
+      EnumProperty<TextInputAction>('textInputAction', textInputAction),
+    );
+    properties.add(
+      IterableProperty<TextInputFormatter>(
+        'textInputFormatter',
+        textInputFormatter,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextEditingController>('controller', controller),
+    );
     properties.add(DiagnosticsProperty<Function>('onSaved', onSaved));
-    properties.add(DiagnosticsProperty<Function>('validateFunction', validateFunction));
+    properties.add(
+      DiagnosticsProperty<Function>('validateFunction', validateFunction),
+    );
     properties.add(DiagnosticsProperty<Function>('endIconClick', endIconClick));
-    properties.add(DiagnosticsProperty<Function>('onFieldSubmitted', onFieldSubmitted));
+    properties.add(
+      DiagnosticsProperty<Function>('onFieldSubmitted', onFieldSubmitted),
+    );
     properties.add(DiagnosticsProperty<Function>('onChanged', onChanged));
+    properties.add(ObjectFlagProperty<GestureTapCallback>.has('onTap', onTap));
     properties.add(DiagnosticsProperty<bool>('isLeadingIcon', isLeadingIcon));
     properties.add(DiagnosticsProperty<bool>('isPassword', isPassword));
     properties.add(DiagnosticsProperty<bool>('enabled', enabled));
     properties.add(DiagnosticsProperty<bool>('isObscureText', isObscureText));
-    properties.add(DiagnosticsProperty<bool>('isHeaderVisible', isHeaderVisible));
+    properties.add(DiagnosticsProperty<bool>('readOnly', readOnly));
+    properties.add(
+      DiagnosticsProperty<bool>('isHeaderVisible', isHeaderVisible),
+    );
     properties.add(DiagnosticsProperty<bool>('isDropdown', isDropdown));
-    properties.add(DiagnosticsProperty<bool>('isPrefixCountryCode', isPrefixCountryCode));
+    properties.add(
+      DiagnosticsProperty<bool>('isPrefixCountryCode', isPrefixCountryCode),
+    );
   }
 }
 
-class PaymishTextFieldState extends State<PaymishTextField> {
+class OneTrustTextFieldState extends State<OneTrustTextField> {
   late bool _isObscure;
 
   @override
@@ -131,6 +154,7 @@ class PaymishTextFieldState extends State<PaymishTextField> {
           focusNode: widget.focusNode,
           initialValue: widget.controller == null ? widget.initialValue : null,
           enabled: widget.enabled,
+          readOnly: widget.readOnly,
           style: const TextStyle(
             color: ColorUtils.primaryColor,
             fontSize: fontLarge,
@@ -157,7 +181,8 @@ class PaymishTextFieldState extends State<PaymishTextField> {
               inherit: true,
             ),
             enabledBorder: const UnderlineInputBorder(
-                borderSide: BorderSide(color: ColorUtils.accentColor, width: 1)),
+              borderSide: BorderSide(color: ColorUtils.accentColor, width: 1),
+            ),
             suffixIcon: _suffixIconCheck(),
             prefixText: widget.isPrefixCountryCode == true
                 ? widget.prefixCountryCode
@@ -184,6 +209,7 @@ class PaymishTextFieldState extends State<PaymishTextField> {
           keyboardType: widget.type,
           obscureText: _isObscure,
           onChanged: widget.onChanged,
+          onTap: widget.onTap,
         ),
       ],
     );

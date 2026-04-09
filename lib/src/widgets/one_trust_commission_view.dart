@@ -7,7 +7,7 @@ import '../utils/dimens.dart';
 import '../utils/image_constants.dart';
 
 @immutable
-class PaymishCommission extends StatelessWidget {
+class OneTrustCommission extends StatelessWidget {
   final String userImage;
   final String commissionType;
   final String userName;
@@ -16,7 +16,7 @@ class PaymishCommission extends StatelessWidget {
   final String date;
   final VoidCallback onClick;
 
-  const PaymishCommission({
+  const OneTrustCommission({
     Key? key,
     required this.userImage,
     required this.commissionType,

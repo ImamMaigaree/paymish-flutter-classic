@@ -14,8 +14,8 @@ import '../../../../utils/preference_key.dart';
 import '../../../../utils/preference_utils.dart';
 import '../../../../utils/progress_dialog.dart';
 import '../../../../widgets/otp_countdown.dart';
-import '../../../../widgets/paymish_appbar.dart';
-import '../../../../widgets/paymish_primary_button.dart';
+import '../../../../widgets/one_trust_appbar.dart';
+import '../../../../widgets/one_trust_primary_button.dart';
 import '../../../../widgets/pin_input_text_field.dart';
 import 'model/req_resend_otp.dart';
 import 'model/req_verify_otp.dart';
@@ -91,7 +91,7 @@ class _LoginVerifyOtpScreenState extends State<LoginVerifyOtpScreen>
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: PaymishAppBar(
+        appBar: OneTrustAppBar(
           title: Localization.of(context).verifyLabel,
           isBackGround: false,
           isFromAuth: widget.isFromAuth,
@@ -230,7 +230,7 @@ class _LoginVerifyOtpScreenState extends State<LoginVerifyOtpScreen>
                         left: spacingLarge,
                         right: spacingLarge,
                         bottom: spacingLarge),
-                    child: PaymishPrimaryButton(
+                    child: OneTrustPrimaryButton(
                       buttonText: Localization.of(context).labelSubmit,
                       isBackground: true,
                       onButtonClick: () => _submitPressed(context),

@@ -13,8 +13,8 @@ import '../../../utils/localization/localization.dart';
 import '../../../utils/navigation.dart';
 import '../../../utils/navigation_params.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/paymish_appbar.dart';
-import '../../../widgets/paymish_support_ticket.dart';
+import '../../../widgets/one_trust_appbar.dart';
+import '../../../widgets/one_trust_support_ticket.dart';
 import 'model/res_support_ticket.dart';
 
 class SupportTicketsScreen extends StatefulWidget {
@@ -88,7 +88,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PaymishAppBar(
+      appBar: OneTrustAppBar(
         isBackGround: false,
         isHideBackButton: !widget.showBackButton,
         title: Localization.of(context).supportTicket,
@@ -136,7 +136,7 @@ class _SupportTicketsScreenState extends State<SupportTicketsScreen>
                             controller: _controller,
                             itemCount: _list.length,
                             itemBuilder: (context, index) {
-                              return PaymishSupportTicket(
+                              return OneTrustSupportTicket(
                                 titleText: _list[index].title ?? '',
                                 categoryText: _list[index].category ?? '',
                                 date: Utils.convertToDateString(

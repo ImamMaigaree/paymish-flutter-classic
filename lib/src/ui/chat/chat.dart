@@ -28,7 +28,7 @@ import '../../utils/preference_key.dart';
 import '../../utils/preference_utils.dart';
 import '../../utils/progress_dialog.dart';
 import '../../utils/utils.dart';
-import '../../widgets/paymish_primary_button.dart';
+import '../../widgets/one_trust_primary_button.dart';
 import '../../widgets/profile_image_view.dart';
 import '../transfermoney/model/res_transfer_money_list.dart';
 import 'model/res_transaction_details_with_user.dart';
@@ -969,7 +969,7 @@ class _ChatScreenState extends State<ChatScreen>
     return Padding(
       padding: const EdgeInsets.fromLTRB(
           spacingMedium, spacing45, spacingMedium, spacingLarge),
-      child: PaymishPrimaryButton(
+      child: OneTrustPrimaryButton(
         buttonText: Localization.of(context).labelProceed,
         isBackground: true,
         onButtonClick: () {
@@ -1044,7 +1044,7 @@ class _ChatScreenState extends State<ChatScreen>
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             Text(
-              Localization.of(context).labelPaymishWallet,
+              Localization.of(context).labelOneTrustWallet,
               style: const TextStyle(
                   fontFamily: fontFamilyPoppinsRegular,
                   fontSize: fontMedium,
@@ -1294,7 +1294,7 @@ class _ChatScreenState extends State<ChatScreen>
         padding: const EdgeInsets.only(
           left: spacingSmall,
         ),
-        child: PaymishPrimaryButton(
+        child: OneTrustPrimaryButton(
             buttonText: Localization.of(context).labelSelect,
             isBackground: true,
             onButtonClick: () async {
@@ -1316,7 +1316,7 @@ class _ChatScreenState extends State<ChatScreen>
         padding: const EdgeInsets.only(
           right: spacingSmall,
         ),
-        child: PaymishPrimaryButton(
+        child: OneTrustPrimaryButton(
             buttonText: Localization.of(context).cancel,
             isBackground: false,
             onButtonClick: () async {
@@ -1355,7 +1355,7 @@ class _ChatScreenState extends State<ChatScreen>
     } else {
       platform = 'AN';
     }
-    return """PAYMISH_${platform}_${userId}_${DateTime.now().millisecondsSinceEpoch}""";
+    return """ONETRUST_${platform}_${userId}_${DateTime.now().millisecondsSinceEpoch}""";
   }
 
   void _addBank(String authID) {
