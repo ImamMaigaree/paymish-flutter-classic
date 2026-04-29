@@ -42,6 +42,8 @@ class UserSignUpScreen extends StatefulWidget {
 class _UserSignUpScreenState extends State<UserSignUpScreen> {
   final FocusNode _firstNameFocus = FocusNode();
   final FocusNode _lastNameFocus = FocusNode();
+  final FocusNode _dateOfBirthFocus = FocusNode();
+  final FocusNode _residentialAddressFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _mobileFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
@@ -65,6 +67,9 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   bool _isActiveTypeUser = true;
   String? _firstName;
   String? _lastName;
+  String? _dateOfBirth;
+  String? _gender;
+  String? _residentialAddress;
   String? _email;
   String? _mobile;
   String? _password;
@@ -75,8 +80,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   String? _agentPassword;
   String? _businessName;
   String? _decsOfBusiness;
-  Color _left = ColorUtils.primaryColor;
-  Color _right = Colors.white;
+  final List<String> _genderOptions = ["male", "female"];
 
   @override
   void initState() {
@@ -87,6 +91,8 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   void dispose() {
     _firstNameFocus.dispose();
     _lastNameFocus.dispose();
+    _dateOfBirthFocus.dispose();
+    _residentialAddressFocus.dispose();
     _emailFocus.dispose();
     _mobileFocus.dispose();
     _passwordFocus.dispose();
@@ -117,12 +123,6 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               _getScreenTitle(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  _buildMenuBar(context),
-                ],
-              ),
               Visibility(
                 visible: _isActiveTypeUser,
                 maintainState: true,
@@ -133,29 +133,12 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
                     children: <Widget>[
                       _getFirstNameTextField(),
                       _getLastNameTextField(),
+                      _getDateOfBirthTextField(),
+                      _getGenderDropDown(),
+                      _getResidentialAddressTextField(),
                       _getEmailTextField(),
                       _getMobileTextField(),
                       _getPasswordTextField(),
-                    ],
-                  ),
-                ),
-              ),
-              Visibility(
-                maintainState: true,
-                visible: !_isActiveTypeUser,
-                child: Form(
-                  autovalidateMode: AutovalidateMode.disabled,
-                  key: _agentFormKey,
-                  child: Column(
-                    children: <Widget>[
-                      _getBusinessNameTextField(),
-                      _getCategoryOfBusinessDropDown(),
-                      _getAgentFirstNameTextField(),
-                      _getAgentLastNameTextField(),
-                      _getAgentEmailTextField(),
-                      _getAgentMobileTextField(),
-                      _getDescOfBusinessTextField(),
-                      _getAgentPasswordTextField(),
                     ],
                   ),
                 ),
@@ -177,15 +160,121 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
   Widget _getScreenTitle() => Padding(
         padding: const EdgeInsets.only(top: spacingSmall, left: spacingLarge),
         child: Text(
-          _isActiveTypeUser
-              ? Localization.of(context).createAccountLabelUser
-              : Localization.of(context).createAccountLabelAgent,
+          Localization.of(context).createAccountLabelUser,
           style: const TextStyle(
             color: ColorUtils.blackColorLight,
             fontSize: fontLarge,
           ),
         ),
       );
+
+  Widget _getDateOfBirthTextField() {
+    return Container(
+      padding: const EdgeInsets.only(
+          top: spacingSmall, left: spacingLarge, right: spacingLarge),
+      child: PaymishTextField(
+        textInputAction: TextInputAction.next,
+        focusNode: _dateOfBirthFocus,
+        onSaved: (value) {
+          _dateOfBirth = (value ?? '').trim();
+        },
+        onFieldSubmitted: (_) {
+          _dateOfBirthFocus.unfocus();
+          FocusScope.of(context).requestFocus(_residentialAddressFocus);
+        },
+        type: TextInputType.datetime,
+        hint: "Date of Birth (YYYY-MM-DD)",
+        label: "Date of Birth (YYYY-MM-DD)",
+        validateFunction: (value) {
+          final input = (value ?? '').trim();
+          if (input.isEmpty) {
+            return "Date of birth is required";
+          }
+          if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(input)) {
+            return "Use YYYY-MM-DD format";
+          }
+          final parsed = DateTime.tryParse(input);
+          if (parsed == null) {
+            return "Enter a valid date";
+          }
+          if (parsed.isAfter(DateTime.now())) {
+            return "Date of birth cannot be in the future";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _getGenderDropDown() {
+    return Container(
+      padding: const EdgeInsets.only(
+          top: spacingSmall, left: spacingLarge, right: spacingLarge),
+      child: DropdownButtonFormField<String>(
+        isExpanded: true,
+        style: const TextStyle(
+          color: ColorUtils.primaryColor,
+          fontSize: fontLarge,
+          fontFamily: fontFamilyPoppinsRegular,
+        ),
+        hint: const Text(
+          "Gender",
+          style: TextStyle(color: ColorUtils.primaryColor),
+        ),
+        initialValue: _gender,
+        items: _genderOptions.map((value) {
+          final label = value == "male" ? "Male" : "Female";
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(label),
+          );
+        }).toList(),
+        onChanged: (String? newValueSelected) {
+          setState(() {
+            _gender = newValueSelected;
+          });
+        },
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return "Gender is required";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _getResidentialAddressTextField() {
+    return Container(
+      padding: const EdgeInsets.only(
+          top: spacingSmall, left: spacingLarge, right: spacingLarge),
+      child: PaymishTextField(
+        textInputAction: TextInputAction.next,
+        focusNode: _residentialAddressFocus,
+        onSaved: (value) {
+          _residentialAddress = (value ?? '').trim();
+        },
+        onFieldSubmitted: (_) {
+          _residentialAddressFocus.unfocus();
+          FocusScope.of(context).requestFocus(_emailFocus);
+        },
+        type: TextInputType.text,
+        hint: "Residential Address",
+        label: "Residential Address",
+        maxLength: 255,
+        validateFunction: (value) {
+          final input = (value ?? '').trim();
+          if (input.isEmpty) {
+            return "Residential address is required";
+          }
+          if (input.length < 5) {
+            return "Enter a valid address";
+          }
+          return null;
+        },
+      ),
+    );
+  }
 
   Widget _getEmailTextField() {
     return Container(
@@ -464,7 +553,7 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
         },
         onFieldSubmitted: (_) {
           _lastNameFocus.unfocus();
-          FocusScope.of(context).requestFocus(_emailFocus);
+          FocusScope.of(context).requestFocus(_dateOfBirthFocus);
         },
         textInputFormatter: [
           FilteringTextInputFormatter(nameRegex(), allow: true),
@@ -618,68 +707,36 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
       );
 
   void _nextPressed() {
-    if (_isActiveTypeUser == true) {
-      if (_userFormKey.currentState?.validate() ?? false) {
-        _userFormKey.currentState?.save();
-        ProgressDialogUtils.showProgressDialog(context);
-        UserApiManager()
-            .signUp(ReqSignUp(
-                firstName: (_firstName ?? '').trim(),
-                lastName: (_lastName ?? '').trim(),
-                email: (_email ?? '').trim(),
-                mobile: (_mobile ?? '').trim(),
-                password: (_password ?? '').trim(),
-                role: DicParams.roleUser))
-            .then((value) async {
-          ProgressDialogUtils.dismissProgressDialog();
-          await clearAfterEditProfile();
-          await NavigationUtils.push(context, routeLoginVerifyOTP, arguments: {
-            NavigationParams.phoneNumber: (_mobile ?? '').trim(),
-            NavigationParams.type: DicParams.signUpMobile,
-            NavigationParams.isFromAuth: true
-          });
-          await DialogUtils.displayToast(
-              Localization.of(context).msgSignUpSuccess);
-        }).catchError((dynamic e) {
-          if (e is ResBaseModel) {
-            debugPrint(e.error);
-          }
-          ProgressDialogUtils.dismissProgressDialog();
-          DialogUtils.showAlertDialog(context, e.error ?? '');
+    if (_userFormKey.currentState?.validate() ?? false) {
+      _userFormKey.currentState?.save();
+      ProgressDialogUtils.showProgressDialog(context);
+      UserApiManager()
+          .signUp(ReqSignUp(
+              firstName: (_firstName ?? '').trim(),
+              lastName: (_lastName ?? '').trim(),
+              dateOfBirth: (_dateOfBirth ?? '').trim(),
+              gender: (_gender ?? '').trim(),
+              residentialAddress: (_residentialAddress ?? '').trim(),
+              email: (_email ?? '').trim(),
+              mobile: (_mobile ?? '').trim(),
+              password: (_password ?? '').trim(),
+              role: DicParams.roleUser))
+          .then((value) async {
+        ProgressDialogUtils.dismissProgressDialog();
+        await clearAfterEditProfile();
+        await NavigationUtils.push(context, routeLoginVerifyOTP, arguments: {
+          NavigationParams.phoneNumber: (_mobile ?? '').trim(),
+          NavigationParams.type: DicParams.signUpMobile,
+          NavigationParams.isFromAuth: true
         });
-      }
-    } else {
-      if (_agentFormKey.currentState?.validate() ?? false) {
-        _agentFormKey.currentState?.save();
-        ProgressDialogUtils.showProgressDialog(context);
-        UserApiManager()
-            .signUp(ReqSignUp(
-                firstName: (_agentFirstName ?? '').trim(),
-                lastName: (_agentLastName ?? '').trim(),
-                businessName: (_businessName ?? '').trim(),
-                businessCategories: _categoryOfBusinessDropDown,
-                email: (_agentEmail ?? '').trim(),
-                mobile: (_agentMobile ?? '').trim(),
-                businessDescription: (_decsOfBusiness ?? '').trim(),
-                role: DicParams.roleAgent,
-                password: (_agentPassword ?? '').trim()))
-            .then((value) async {
-          ProgressDialogUtils.dismissProgressDialog();
-          await clearAfterEditProfile();
-          await NavigationUtils.push(context, routeLoginVerifyOTP, arguments: {
-            NavigationParams.phoneNumber: (_agentMobile ?? '').trim(),
-            NavigationParams.type: DicParams.signUpMobile,
-            NavigationParams.isFromAuth: true
-          });
-          await DialogUtils.displayToast(
-              Localization.of(context).msgSignUpSuccess);
-        }).catchError((dynamic e) {
-          if (e is ResBaseModel) {
-            ProgressDialogUtils.dismissProgressDialog();
-            DialogUtils.showAlertDialog(context, e.error ?? '');
-          }
-        });
-      }
+        await DialogUtils.displayToast(Localization.of(context).msgSignUpSuccess);
+      }).catchError((dynamic e) {
+        if (e is ResBaseModel) {
+          debugPrint(e.error);
+        }
+        ProgressDialogUtils.dismissProgressDialog();
+        DialogUtils.showAlertDialog(context, e.error ?? '');
+      });
     }
   }
 
@@ -712,24 +769,6 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
                           })
                   ]),
             ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  top: spacingSmall, bottom: spacingSmall),
-              child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                      text: _isActiveTypeUser
-                          ? Localization.of(context).registerAsAgent
-                          : Localization.of(context).registerAsUser,
-                      style: const TextStyle(
-                        fontSize: fontLarge,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: fontFamilyPoppinsMedium,
-                        color: ColorUtils.primaryColor,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = _onTabChange)),
-            ),
           ],
         ),
       );
@@ -738,105 +777,5 @@ class _UserSignUpScreenState extends State<UserSignUpScreen> {
     NavigationUtils.push(context, routePrivacyPolicy, arguments: {
       NavigationParams.isPrivacyPolicy: isPrivacyPolicy,
     });
-  }
-
-  void _onTabChange() {
-    _removeFocus();
-    setState(() {
-      _isActiveTypeUser = !_isActiveTypeUser;
-
-      if (_isActiveTypeUser) {
-        _right = Colors.white;
-        _left = ColorUtils.primaryColor;
-      } else {
-        _right = ColorUtils.primaryColor;
-        _left = Colors.white;
-      }
-    });
-  }
-
-  void _removeFocus() {
-    _firstNameFocus.unfocus();
-    _lastNameFocus.unfocus();
-    _emailFocus.unfocus();
-    _mobileFocus.unfocus();
-    _passwordFocus.unfocus();
-    _businessNameFocus.unfocus();
-    _categoryOfBusinessFocus.unfocus();
-    _decsOfBusinessFocus.unfocus();
-  }
-
-  Widget _buildMenuBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, spacingLarge, 0, 0),
-      child: Container(
-        width: 280.0,
-        height: socialButtonHeight,
-        decoration: const BoxDecoration(
-          color: ColorUtils.primaryColor,
-          borderRadius: BorderRadius.all(
-            Radius.circular(9.0),
-          ),
-        ),
-        child: CustomPaint(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.all(4.0),
-                  decoration: BoxDecoration(
-                    color: _right == ColorUtils.primaryColor
-                        ? ColorUtils.primaryColor
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(6.0),
-                  ),
-                  child: TextButton(
-                    onPressed: _onTabChange,
-                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                    child: Text(
-                      Localization.of(context).labelUser,
-                      style: TextStyle(
-                        color: _left,
-                        fontSize: fontLarge,
-                        backgroundColor: _right == ColorUtils.primaryColor
-                            ? ColorUtils.primaryColor
-                            : Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              //Container(height: 33.0, width: 1.0, color: Colors.white),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.all(4.0),
-                  decoration: BoxDecoration(
-                    color: _left == ColorUtils.primaryColor
-                        ? ColorUtils.primaryColor
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(6.0),
-                  ),
-                  child: TextButton(
-                    onPressed: _onTabChange,
-                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                    child: Text(
-                      Localization.of(context).labelAgent,
-                      style: TextStyle(
-                        color: _right,
-                        backgroundColor: _left == ColorUtils.primaryColor
-                            ? ColorUtils.primaryColor
-                            : Colors.white,
-                        fontSize: fontLarge,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

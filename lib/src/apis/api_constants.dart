@@ -31,6 +31,8 @@ class ApiConstants {
   static const String apiValidatePin = "user/validate-pin";
   static const String apiMyTransaction = "user-account/my-transactions";
   static const String apiWalletOverview = "user/my-wallet";
+  static const String apiProvisionVirtualAccount = "user/virtual-account/provision";
+  static const String apiGetVirtualAccount = "user/virtual-account";
   static const String apiQRDetails = "user-account/qr-details";
   static const String apiGlobalSearch = "user/search";
   static const String apiAddDevice = "device";
@@ -43,6 +45,7 @@ class ApiConstants {
   static const String apiValidAmount = "user-account/validate-request-amount";
   static const String apiWithdrawMoney = "user-account/withdraw-money";
   static const String apiCategoryList = "support-ticket/categories";
+  static const String apiSupportTicketMessages = "support-ticket/messages";
   static const String apiFeeQuote = "fees/quote";
   static const String apiWithdrawCheckout = "user-account/withdraw-checkout";
   static const String apiUpdateAccountSettings = "user/account-setting";

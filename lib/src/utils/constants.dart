@@ -29,6 +29,7 @@ const String routeAddMoneyToWallet = "routeAddMoneyToWallet";
 const String routeWithdrawMoney = "routeWithdrawMoney";
 const String routeAddMoneyToWalletSelectPaymentMethod =
     "routeAddMoneyToWalletSelectPaymentMethod";
+const String routeReviewBankTransfer = "routeReviewBankTransfer";
 
 const String apiToken = "apiToken";
 const int splashTime = 3;
@@ -75,4 +76,3 @@ const String countryCodeAddToString = '+234-';
 const String dateFormatServerDate = 'yyyy-MM-dd HH:mm:ss';
 const String dateFormatChatDate = 'dd-MM-yyyy';
 const String decimalAmountRegex = r'^(\d+)?\.?\d{0,2}';
-

@@ -65,13 +65,13 @@ dynamic get socketUrl {
 
 Map<String, dynamic> userDevConstants = {
   _baseUrl: "http://10.0.2.2:5500/api/v1/",
-  _socketUrl: "http://10.0.2.2:5500/",
+  _socketUrl: "http://10.0.2.2:3003/",
   _payStackPublicKey: "pk_live_1b15f5dbb3477f2418f4fb06672d48410e5b2f79"
 };
 
 Map<String, dynamic> merchantDevConstants = {
   _baseUrl: "http://10.0.2.2:5500/api/v1/",
-  _socketUrl: "http://10.0.2.2:5500/",
+  _socketUrl: "http://10.0.2.2:3003/",
   _payStackPublicKey: "pk_live_1b15f5dbb3477f2418f4fb06672d48410e5b2f79"
 };
 

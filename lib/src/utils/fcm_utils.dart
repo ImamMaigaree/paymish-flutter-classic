@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -22,14 +21,24 @@ import 'preference_utils.dart';
 bool _isMessagingListenersRegistered = false;
 
 Future<void> configureFirebaseMessaging() async {
-  final firebaseMessaging = FirebaseMessaging.instance;
-  await firebaseMessaging.setAutoInitEnabled(true);
-  await firebaseMessaging.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  try {
+    final firebaseMessaging = FirebaseMessaging.instance;
+    await firebaseMessaging
+        .setAutoInitEnabled(true)
+        .timeout(const Duration(seconds: 5));
+    await firebaseMessaging.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  } on TimeoutException {
+    debugPrint("FCM: configure timed out, continuing without push setup.");
+  } catch (e) {
+    debugPrint(
+      "FCM: configure failed, continuing without push setup. error=$e",
+    );
+  }
 }
 
 Future<String> getFcmTokenSafely({
@@ -106,9 +115,8 @@ void navigateToScreen({
   required Map<String, dynamic> message,
   required bool fromNotification,
 }) {
-  switch (Platform.isAndroid
-      ? message[DicParams.data][DicParams.actionType]
-      : message[DicParams.actionType]) {
+  final actionType = _extractActionType(message);
+  switch (actionType) {
     case NotificationConstants.requested:
       openChatScreen(context, message);
       break;
@@ -118,7 +126,26 @@ void navigateToScreen({
     case NotificationConstants.approved:
       openChatScreen(context, message);
       break;
+    case NotificationConstants.declined:
+      openChatScreen(context, message);
+      break;
+    case NotificationConstants.paid:
+      openChatScreen(context, message);
+      break;
     case NotificationConstants.support:
+      getString(PreferenceKey.routeName) == routeSupportTickets
+          ? NavigationUtils.pushReplacement(
+              context,
+              routeSupportTickets,
+              arguments: {NavigationParams.showBackButton: true},
+            )
+          : NavigationUtils.push(
+              context,
+              routeSupportTickets,
+              arguments: {NavigationParams.showBackButton: true},
+            );
+      break;
+    case NotificationConstants.supportTicket:
       getString(PreferenceKey.routeName) == routeSupportTickets
           ? NavigationUtils.pushReplacement(
               context,
@@ -143,18 +170,66 @@ void navigateToScreen({
     case NotificationConstants.ticketClosed:
       openSupportChatScreen(context, message);
       break;
+    case NotificationConstants.utilityBillPayment:
+      getString(PreferenceKey.routeName) == routeMyWallet
+          ? NavigationUtils.pushReplacement(context, routeMyWallet)
+          : NavigationUtils.push(context, routeMyWallet);
+      break;
 
     default:
       break;
   }
 }
 
+String _extractActionType(Map<String, dynamic> message) {
+  final data = message[DicParams.data];
+  if (data is Map<String, dynamic>) {
+    final value = data[DicParams.actionType];
+    if (value != null && value.toString().isNotEmpty) {
+      return value.toString();
+    }
+  }
+  final fallback = message[DicParams.actionType];
+  return fallback?.toString() ?? '';
+}
+
+int? _extractInt(Map<String, dynamic> message, String key) {
+  final data = message[DicParams.data];
+  if (data is Map<String, dynamic>) {
+    final value = data[key];
+    if (value is int) {
+      return value;
+    }
+    if (value != null) {
+      return int.tryParse(value.toString());
+    }
+  }
+  final fallback = message[key];
+  if (fallback is int) {
+    return fallback;
+  }
+  if (fallback != null) {
+    return int.tryParse(fallback.toString());
+  }
+  return null;
+}
+
 void openSupportChatScreen(BuildContext context, Map<String, dynamic> message) {
-  final ticketId = int.parse(
-    Platform.isAndroid
-        ? message[DicParams.data][DicParams.ticketId]
-        : message[DicParams.ticketId],
-  );
+  final ticketId = _extractInt(message, DicParams.ticketId);
+  if (ticketId == null || ticketId <= 0) {
+    getString(PreferenceKey.routeName) == routeSupportTickets
+        ? NavigationUtils.pushReplacement(
+            context,
+            routeSupportTickets,
+            arguments: {NavigationParams.showBackButton: true},
+          )
+        : NavigationUtils.push(
+            context,
+            routeSupportTickets,
+            arguments: {NavigationParams.showBackButton: true},
+          );
+    return;
+  }
   if (Provider.of<SupportChatProvider>(context, listen: false).ticketId !=
       ticketId) {
     if (Provider.of<SupportChatProvider>(context, listen: false).isScreenOpen) {
@@ -174,11 +249,21 @@ void openSupportChatScreen(BuildContext context, Map<String, dynamic> message) {
 }
 
 void openChatScreen(BuildContext context, Map<String, dynamic> message) {
-  final userId = int.parse(
-    Platform.isAndroid
-        ? message[DicParams.data][DicParams.userId]
-        : message[DicParams.userId],
-  );
+  final userId = _extractInt(message, DicParams.userId);
+  if (userId == null || userId <= 0) {
+    getString(PreferenceKey.routeName) == routeTransferMoneyScreen
+        ? NavigationUtils.pushReplacement(
+            context,
+            routeTransferMoneyScreen,
+            arguments: {NavigationParams.showBackButton: true},
+          )
+        : NavigationUtils.push(
+            context,
+            routeTransferMoneyScreen,
+            arguments: {NavigationParams.showBackButton: true},
+          );
+    return;
+  }
   if (Provider.of<ChatProvider>(context, listen: false).userId != userId) {
     if (Provider.of<ChatProvider>(context, listen: false).isScreenOpen) {
       NavigationUtils.pushReplacement(

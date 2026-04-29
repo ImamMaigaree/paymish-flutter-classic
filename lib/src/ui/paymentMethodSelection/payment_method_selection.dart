@@ -31,6 +31,14 @@ class PaymentMethodSelection extends StatelessWidget {
   List<BankDetail> _list = <BankDetail>[];
   List<CardDetails> _cardList = <CardDetails>[];
   final _selectedIndex = ValueNotifier<int>(0);
+  final List<String> _popularBankOrder = const <String>[
+    "GTBANK",
+    "ACCESS",
+    "UBA",
+    "ZENITH",
+    "FIRSTBANK",
+    "FIDELITY",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +63,7 @@ class PaymentMethodSelection extends StatelessWidget {
                   return ListView(
                     shrinkWrap: true,
                     children: [
+                      if (isWithdrawMoney) _popularBanksWidget(),
                       // Bank Details List From API
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -102,6 +111,72 @@ class PaymentMethodSelection extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _popularBanksWidget() {
+    final List<String> banks = const <String>[
+      "GTBank",
+      "Access",
+      "UBA",
+      "Zenith",
+      "FirstBank",
+      "Fidelity",
+    ];
+    return Container(
+      margin: const EdgeInsets.fromLTRB(
+        spacingLarge,
+        spacingSmall,
+        spacingLarge,
+        spacingMedium,
+      ),
+      padding: const EdgeInsets.all(spacingSmall),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(spacingSmall),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(16),
+            blurRadius: spacingLarge,
+          ),
+        ],
+      ),
+      child: Wrap(
+        spacing: spacingSmall,
+        runSpacing: spacingSmall,
+        children: banks
+            .map(
+              (name) => Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: spacingSmall,
+                  vertical: spacingXSmall,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEAF2F4),
+                  borderRadius: BorderRadius.circular(spacingXLarge),
+                ),
+                child: Text(
+                  name,
+                  style: const TextStyle(
+                    fontFamily: fontFamilyPoppinsMedium,
+                    color: ColorUtils.primaryColor,
+                    fontSize: fontXSmall,
+                  ),
+                ),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  int _popularBankRank(String? bankName) {
+    final normalized = (bankName ?? "").toUpperCase();
+    for (var i = 0; i < _popularBankOrder.length; i++) {
+      if (normalized.contains(_popularBankOrder[i])) {
+        return i;
+      }
+    }
+    return 999;
   }
 
   Widget otherMethods(
@@ -205,6 +280,14 @@ class PaymentMethodSelection extends StatelessWidget {
     if (isWithdrawMoney) {
       await UserApiManager().getBankDetails().then((value) {
         _list = value.data ?? <BankDetail>[];
+        _list.sort((a, b) {
+          final rankA = _popularBankRank(a.bankName);
+          final rankB = _popularBankRank(b.bankName);
+          if (rankA != rankB) {
+            return rankA.compareTo(rankB);
+          }
+          return (a.bankName ?? "").compareTo(b.bankName ?? "");
+        });
       }).catchError((dynamic e) {
         if (e is ResBaseModel) {
           if (!checkSessionExpire(e, context)) {

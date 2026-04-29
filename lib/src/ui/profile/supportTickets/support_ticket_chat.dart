@@ -6,6 +6,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../apis/apimanager/user_api_manager.dart';
 import '../../../apis/dic_params.dart';
 import '../../../main.dart';
 import '../../../socket/socket_constants.dart';
@@ -16,8 +17,6 @@ import '../../../utils/dimens.dart';
 import '../../../utils/image_constants.dart';
 import '../../../utils/localization/localization.dart';
 import '../../../utils/navigation.dart';
-import '../../../utils/preference_key.dart';
-import '../../../utils/preference_utils.dart';
 import '../../../utils/utils.dart';
 import 'model/res_support_ticket_old_messages.dart';
 import 'provider/support_chat_provider.dart';
@@ -26,7 +25,7 @@ class SupportTicketChatScreen extends StatefulWidget {
   final int senderUserId;
 
   const SupportTicketChatScreen({Key? key, required this.senderUserId})
-      : super(key: key);
+    : super(key: key);
 
   @override
   _SupportTicketChatScreenState createState() =>
@@ -41,11 +40,14 @@ class SupportTicketChatScreen extends StatefulWidget {
 
 class _SupportTicketChatScreenState extends State<SupportTicketChatScreen>
     with
-// ignore: prefer_mixin
+        // ignore: prefer_mixin
         RouteAware {
   int _pageCount = 0;
   final ScrollController _controller = ScrollController();
   final TextEditingController _messageTextController = TextEditingController();
+  Timer? _loadingTimeoutTimer;
+  Timer? _pollingTimer;
+  bool _isSendingMessage = false;
 
   @override
   void didChangeDependencies() {
@@ -68,25 +70,36 @@ class _SupportTicketChatScreenState extends State<SupportTicketChatScreen>
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      Provider.of<SupportChatProvider>(context, listen: false)
-          .clearAllMessages();
-      Provider.of<SupportChatProvider>(context, listen: false).isLoading =
-          ValueNotifier<bool>(true);
+      final provider = Provider.of<SupportChatProvider>(context, listen: false);
+      provider.clearAllMessages();
+      provider.setLoading(true);
       _pageCount = 0;
-      initSocketManager(context);
+      reInitializeAndConnectSocket();
 
       emit(join, ({DicParams.ticketId: widget.senderUserId}));
-      emit(
-          requestOldMessages,
-          ({
-            DicParams.page: _pageCount,
-            DicParams.ticketId: widget.senderUserId,
-            DicParams.limit: 20
-          }));
-      Provider.of<SupportChatProvider>(context, listen: false).ticketId =
-          widget.senderUserId;
-      Provider.of<SupportChatProvider>(context, listen: false).isScreenOpen =
-          true;
+      emit(requestOldMessages, ({
+        DicParams.page: _pageCount,
+        DicParams.ticketId: widget.senderUserId,
+        DicParams.limit: 20,
+      }));
+      _loadMessagesFromApi(reset: true, page: _pageCount);
+      _startLoadingTimeout();
+      _startPolling();
+      provider.ticketId = widget.senderUserId;
+      provider.isScreenOpen = true;
+    });
+  }
+
+  void _startLoadingTimeout() {
+    _loadingTimeoutTimer?.cancel();
+    _loadingTimeoutTimer = Timer(const Duration(seconds: 8), () {
+      if (!mounted) {
+        return;
+      }
+      final provider = Provider.of<SupportChatProvider>(context, listen: false);
+      if (provider.isLoading.value) {
+        _loadMessagesFromApi(reset: true, page: 0);
+      }
     });
   }
 
@@ -96,14 +109,50 @@ class _SupportTicketChatScreenState extends State<SupportTicketChatScreen>
       setState(() {
         _pageCount = _pageCount + 1;
       });
-      emit(
-          requestOldMessages,
-          ({
-            DicParams.page: _pageCount + 1,
-            DicParams.ticketId: widget.senderUserId,
-            DicParams.limit: 20
-          }));
+      emit(requestOldMessages, ({
+        DicParams.page: _pageCount,
+        DicParams.ticketId: widget.senderUserId,
+        DicParams.limit: 20,
+      }));
+      _loadMessagesFromApi(page: _pageCount);
     }
+  }
+
+  Future<void> _loadMessagesFromApi({
+    bool reset = false,
+    required int page,
+  }) async {
+    try {
+      final provider = Provider.of<SupportChatProvider>(context, listen: false);
+      final response = await UserApiManager().getSupportTicketMessages(
+        ticketId: widget.senderUserId,
+        page: page,
+        limit: 20,
+      );
+      final ticketStatus = response.result?.ticketDetails?.status ?? '';
+      provider.setIsTicketClosed(ticketStatus);
+      final messages = response.result?.message ?? <SupportChatMessage>[];
+      if (reset) {
+        provider.replaceMessages(messages);
+      } else if (page > 0) {
+        provider.prependOlderMessages(messages);
+      } else {
+        provider.mergeNewMessages(messages);
+      }
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      final provider = Provider.of<SupportChatProvider>(context, listen: false);
+      provider.setLoading(false);
+    }
+  }
+
+  void _startPolling() {
+    _pollingTimer?.cancel();
+    _pollingTimer = Timer.periodic(const Duration(seconds: 4), (_) {
+      _loadMessagesFromApi(page: 0);
+    });
   }
 
   @override
@@ -126,122 +175,131 @@ class _SupportTicketChatScreenState extends State<SupportTicketChatScreen>
         NavigationUtils.pop(context);
       },
       child: Scaffold(
-          backgroundColor: Colors.white,
-          body: SafeArea(
-            child: Consumer<SupportChatProvider>(
-              builder: (context, myModel, child) => Column(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(
-                        right: spacingMedium,
-                        top: spacingMedium,
-                        bottom: spacingMedium),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        FloatingActionButton(
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          highlightElevation: 0,
-                          hoverElevation: 0,
-                          focusElevation: 0,
-                          disabledElevation: 0,
-                          child: Image.asset(
-                            ImageConstants.icBackArrow,
-                            fit: BoxFit.contain,
-                            height: spacingMedium,
-                            color: ColorUtils.primaryColor,
-                          ),
-                          onPressed: () {
-                            Provider.of<SupportChatProvider>(context,
-                                    listen: false)
-                                .ticketId = 0;
-                            Provider.of<SupportChatProvider>(context,
-                                    listen: false)
-                                .isScreenOpen = false;
-                            NavigationUtils.pop(context);
-                          },
-                        ),
-                      ],
-                    ),
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Consumer<SupportChatProvider>(
+            builder: (context, myModel, child) => Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(
+                    right: spacingMedium,
+                    top: spacingMedium,
+                    bottom: spacingMedium,
                   ),
-                  _getTopHeader(),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.only(bottom: spacingLarge),
-                      height: MediaQuery.of(context).size.height * 0.72,
-                      child: ValueListenableBuilder(
-                        valueListenable: myModel.isLoading,
-                        builder: (context, isLoading, _) {
-                          return isLoading
-                              ? const Center(child: CircularProgressIndicator())
-                              : myModel.list.isEmpty
-                                  ? Center(
-                                      child: Text(Localization.of(context)
-                                          .labelNoMessageFound))
-                                  : NotificationListener(
-                                      onNotification: (scrollNotification) {
-                                        if (scrollNotification
-                                            is ScrollEndNotification) {
-                                          _onEndScroll(
-                                              scrollNotification.metrics);
-                                        }
-                                        return false;
-                                      },
-                                      child: Align(
-                                        alignment: Alignment.topCenter,
-                                        child: ListView.builder(
-                                          controller: _controller,
-                                          shrinkWrap: true,
-                                          itemCount: myModel.list.keys.length,
-                                          reverse: true,
-                                          itemBuilder: (context, index) {
-                                            final date = myModel.list.keys
-                                                .toList()[index];
-                                            final messages =
-                                                myModel.list[date] ??
-                                                    <SupportChatMessage>[];
-                                            return Column(
-                                              children: [
-                                                _buildDateField(date, context),
-                                                _getListViewFromMessage(
-                                                    messages),
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    );
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      FloatingActionButton(
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        highlightElevation: 0,
+                        hoverElevation: 0,
+                        focusElevation: 0,
+                        disabledElevation: 0,
+                        child: Image.asset(
+                          ImageConstants.icBackArrow,
+                          fit: BoxFit.contain,
+                          height: spacingMedium,
+                          color: ColorUtils.primaryColor,
+                        ),
+                        onPressed: () {
+                          Provider.of<SupportChatProvider>(
+                            context,
+                            listen: false,
+                          ).ticketId = 0;
+                          Provider.of<SupportChatProvider>(
+                            context,
+                            listen: false,
+                          ).isScreenOpen = false;
+                          NavigationUtils.pop(context);
                         },
                       ),
+                    ],
+                  ),
+                ),
+                _getTopHeader(),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.only(bottom: spacingLarge),
+                    height: MediaQuery.of(context).size.height * 0.72,
+                    child: ValueListenableBuilder(
+                      valueListenable: myModel.isLoading,
+                      builder: (context, isLoading, _) {
+                        return isLoading
+                            ? const Center(child: CircularProgressIndicator())
+                            : myModel.list.isEmpty
+                            ? Center(
+                                child: Text(
+                                  Localization.of(context).labelNoMessageFound,
+                                ),
+                              )
+                            : NotificationListener(
+                                onNotification: (scrollNotification) {
+                                  if (scrollNotification
+                                      is ScrollEndNotification) {
+                                    _onEndScroll(scrollNotification.metrics);
+                                  }
+                                  return false;
+                                },
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: ListView.builder(
+                                    controller: _controller,
+                                    shrinkWrap: true,
+                                    itemCount: myModel.list.keys.length,
+                                    reverse: true,
+                                    itemBuilder: (context, index) {
+                                      final date = myModel.list.keys
+                                          .toList()[index];
+                                      final messages =
+                                          myModel.list[date] ??
+                                          <SupportChatMessage>[];
+                                      return Column(
+                                        children: [
+                                          _buildDateField(date, context),
+                                          _getListViewFromMessage(messages),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
+                              );
+                      },
                     ),
                   ),
-                  myModel.isTicketClosed
-                      ? const SizedBox()
-                      : getChatTextFieldUI(context, myModel),
-                ],
-              ),
+                ),
+                myModel.isTicketClosed
+                    ? const SizedBox()
+                    : getChatTextFieldUI(context, myModel),
+              ],
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 
   Widget _buildDateField(String date, BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(
-          spacingSmall, spacingTiny, spacingSmall, spacingTiny),
+        spacingSmall,
+        spacingTiny,
+        spacingSmall,
+        spacingTiny,
+      ),
       decoration: BoxDecoration(
-        border:
-            Border.all(
-                color:
-                    ColorUtils.secondaryTextColor.withValues(alpha: 0.5)),
+        border: Border.all(
+          color: ColorUtils.secondaryTextColor.withValues(alpha: 0.5),
+        ),
         borderRadius: BorderRadius.circular(spacingXXLarge),
         color: ColorUtils.unCheckedSwitchColor.withValues(alpha: 0.5),
       ),
       child: Text(
         Utils.convertStringWithTimeDifference(date.toString(), context),
         style: const TextStyle(
-            color: Colors.black, fontFamily: fontFamilyCovesBold),
+          color: Colors.black,
+          fontFamily: fontFamilyCovesBold,
+        ),
       ),
     );
   }
@@ -268,26 +326,29 @@ class _SupportTicketChatScreenState extends State<SupportTicketChatScreen>
             children: <Widget>[
               Container(
                 constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.7),
+                  maxWidth: MediaQuery.of(context).size.width * 0.7,
+                ),
                 padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 12.0),
                 decoration: const BoxDecoration(
                   color: ColorUtils.recentTextColor,
                   borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(spacing17),
-                      topRight: Radius.circular(spacing17),
-                      bottomRight: Radius.circular(spacing4),
-                      bottomLeft: Radius.circular(spacing17)),
+                    topLeft: Radius.circular(spacing17),
+                    topRight: Radius.circular(spacing17),
+                    bottomRight: Radius.circular(spacing4),
+                    bottomLeft: Radius.circular(spacing17),
+                  ),
                 ),
                 margin: const EdgeInsets.only(right: 10.0),
                 child: Text(
                   item.message ?? '',
                   style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: fontMedium,
-                      fontWeight: FontWeight.w400),
+                    color: Colors.white,
+                    fontSize: fontMedium,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
-              _buildTimeView(item.createdAt, true)
+              _buildTimeView(item.createdAt, true),
             ],
           ),
         ],
@@ -307,15 +368,17 @@ class _SupportTicketChatScreenState extends State<SupportTicketChatScreen>
             children: [
               Container(
                 constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.7),
+                  maxWidth: MediaQuery.of(context).size.width * 0.7,
+                ),
                 padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 12.0),
                 decoration: const BoxDecoration(
                   color: ColorUtils.chatPaymentCardColour,
                   borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(spacing17),
-                      topRight: Radius.circular(spacing17),
-                      bottomRight: Radius.circular(spacing17),
-                      bottomLeft: Radius.circular(spacing4)),
+                    topLeft: Radius.circular(spacing17),
+                    topRight: Radius.circular(spacing17),
+                    bottomRight: Radius.circular(spacing17),
+                    bottomLeft: Radius.circular(spacing4),
+                  ),
                 ),
                 margin: const EdgeInsets.only(left: 10.0),
                 child: Column(
@@ -325,14 +388,15 @@ class _SupportTicketChatScreenState extends State<SupportTicketChatScreen>
                     Text(
                       item.message ?? '',
                       style: const TextStyle(
-                          color: ColorUtils.chatMessageColor,
-                          fontSize: fontMedium,
-                          fontWeight: FontWeight.w400),
+                        color: ColorUtils.chatMessageColor,
+                        fontSize: fontMedium,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ],
                 ),
               ),
-              _buildTimeView(item.createdAt, false)
+              _buildTimeView(item.createdAt, false),
             ],
           ),
         ],
@@ -357,34 +421,40 @@ class _SupportTicketChatScreenState extends State<SupportTicketChatScreen>
   }
 
   Widget getCardViewForRequestedPayment(
-      BuildContext context, SupportChatMessage message) {
+    BuildContext context,
+    SupportChatMessage message,
+  ) {
     return Row(
-        mainAxisAlignment: message.type == DicParams.receiver
-            ? MainAxisAlignment.start
-            : MainAxisAlignment.end,
-        children: [
-          Column(
-            crossAxisAlignment: message.type == DicParams.receiver
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.end,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                    right: spacingLarge, left: spacingLarge),
-                child: Text(
-                  toBeginningOfSentenceCase(message.senderName) ?? '',
-                  style: const TextStyle(
-                      fontWeight: fontWeightSemiBold,
-                      fontSize: fontXSmall,
-                      color: ColorUtils.chatNameColor),
+      mainAxisAlignment: message.type == DicParams.receiver
+          ? MainAxisAlignment.start
+          : MainAxisAlignment.end,
+      children: [
+        Column(
+          crossAxisAlignment: message.type == DicParams.receiver
+              ? CrossAxisAlignment.start
+              : CrossAxisAlignment.end,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                right: spacingLarge,
+                left: spacingLarge,
+              ),
+              child: Text(
+                toBeginningOfSentenceCase(message.senderName) ?? '',
+                style: const TextStyle(
+                  fontWeight: fontWeightSemiBold,
+                  fontSize: fontXSmall,
+                  color: ColorUtils.chatNameColor,
                 ),
               ),
-              message.type == DicParams.receiver
-                  ? _buildReceiverMessageView(message)
-                  : _buildSenderMessageView(message),
-            ],
-          )
-        ]);
+            ),
+            message.type == DicParams.receiver
+                ? _buildReceiverMessageView(message)
+                : _buildSenderMessageView(message),
+          ],
+        ),
+      ],
+    );
   }
 
   Widget _getTopHeader() {
@@ -398,8 +468,12 @@ class _SupportTicketChatScreenState extends State<SupportTicketChatScreen>
       ),
       child: Container(
         width: double.infinity,
-        padding:
-            const EdgeInsets.fromLTRB(spacingMedium, 0.0, 55.0, spacingSmall),
+        padding: const EdgeInsets.fromLTRB(
+          spacingMedium,
+          0.0,
+          55.0,
+          spacingSmall,
+        ),
         child: Text(
           Localization.of(context).labelChat,
           style: const TextStyle(
@@ -414,7 +488,9 @@ class _SupportTicketChatScreenState extends State<SupportTicketChatScreen>
   }
 
   Widget getChatTextFieldUI(
-      BuildContext context, SupportChatProvider provider) {
+    BuildContext context,
+    SupportChatProvider provider,
+  ) {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: ColorUtils.borderColor),
@@ -426,55 +502,81 @@ class _SupportTicketChatScreenState extends State<SupportTicketChatScreen>
         child: TextFormField(
           controller: _messageTextController,
           style: const TextStyle(
-              fontFamily: fontFamilyPoppinsRegular,
-              color: ColorUtils.primaryTextColor,
-              fontSize: fontMedium),
+            fontFamily: fontFamilyPoppinsRegular,
+            color: ColorUtils.primaryTextColor,
+            fontSize: fontMedium,
+          ),
           cursorColor: ColorUtils.primaryTextColor,
           textInputAction: TextInputAction.done,
           decoration: InputDecoration(
-              counterText: "",
-              suffixIcon: InkWell(
-                onTap: () {
-                  if (_messageTextController.text.isNotEmpty) {
-                    onSendMessage(_messageTextController.text, provider);
-                  }
-                },
-                child: Image.asset(
-                  ImageConstants.icSendMessage,
-                  scale: 3.5,
-                ),
-              ),
-              border: InputBorder.none,
-              hintStyle: const TextStyle(
-                  fontFamily: fontFamilyPoppinsRegular,
-                  color: ColorUtils.primaryTextColor,
-                  fontSize: fontMedium),
-              hintText: Localization.of(context).hintWriteMessage),
+            counterText: "",
+            suffixIcon: InkWell(
+              onTap: () {
+                if (!_isSendingMessage &&
+                    _messageTextController.text.trim().isNotEmpty) {
+                  onSendMessage(_messageTextController.text);
+                }
+              },
+              child: Image.asset(ImageConstants.icSendMessage, scale: 3.5),
+            ),
+            border: InputBorder.none,
+            hintStyle: const TextStyle(
+              fontFamily: fontFamilyPoppinsRegular,
+              color: ColorUtils.primaryTextColor,
+              fontSize: fontMedium,
+            ),
+            hintText: Localization.of(context).hintWriteMessage,
+          ),
         ),
       ),
     );
   }
 
-  Future<void> onSendMessage(
-      String content, SupportChatProvider provider) async {
-    emit(
-        emitNewMessage,
-        ({
-          DicParams.ticketId: widget.senderUserId,
-          DicParams.message: content
-        }));
-    provider.addMessage(SupportChatMessage(
-        message: content,
-        profilePicture: getString(PreferenceKey.profilePicture) ?? '',
-        senderName: getString(PreferenceKey.role) != DicParams.user
-            ? getString(PreferenceKey.businessName) ?? ''
-            : """${getString(PreferenceKey.firstName) ?? ''} ${getString(PreferenceKey.lastName) ?? ''}""",
-        createdAt: Utils().getUtcDate(),
-        role: getString(PreferenceKey.role) ?? ''));
+  Future<void> onSendMessage(String content) async {
+    final message = content.trim();
+    if (message.isEmpty || _isSendingMessage) {
+      return;
+    }
+
     setState(() {
-      _messageTextController.text = "";
-      Timer(const Duration(milliseconds: 500),
-          () => _controller.jumpTo(_controller.position.minScrollExtent));
+      _isSendingMessage = true;
     });
+
+    try {
+      await UserApiManager().sendSupportTicketMessage(
+        ticketId: widget.senderUserId,
+        message: message,
+      );
+
+      setState(() {
+        _messageTextController.clear();
+      });
+
+      _loadMessagesFromApi(page: 0);
+      Timer(
+        const Duration(milliseconds: 300),
+        () => _controller.jumpTo(_controller.position.minScrollExtent),
+      );
+    } catch (_) {
+      return;
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSendingMessage = false;
+        });
+      } else {
+        _isSendingMessage = false;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _loadingTimeoutTimer?.cancel();
+    _pollingTimer?.cancel();
+    Provider.of<SupportChatProvider>(context, listen: false).ticketId = 0;
+    Provider.of<SupportChatProvider>(context, listen: false).isScreenOpen =
+        false;
+    super.dispose();
   }
 }

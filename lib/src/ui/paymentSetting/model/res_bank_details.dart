@@ -19,6 +19,8 @@ class BankDetail {
   int? id;
   String? bankName;
   String? maskedAccountNumber;
+  String? bankHolderName;
+  String? code;
   String? accountType;
   int? isDefault;
 
@@ -26,6 +28,8 @@ class BankDetail {
       {this.id,
       this.bankName,
       this.maskedAccountNumber,
+      this.bankHolderName,
+      this.code,
       this.accountType,
       this.isDefault});
 
@@ -33,6 +37,8 @@ class BankDetail {
     id = json[DicParams.id];
     bankName = json[DicParams.bankName];
     maskedAccountNumber = json[DicParams.maskedAccountNumber];
+    bankHolderName = json[DicParams.bankHolderName];
+    code = json[DicParams.code];
     accountType = json[DicParams.accountType];
     isDefault = json[DicParams.isDefault];
   }
